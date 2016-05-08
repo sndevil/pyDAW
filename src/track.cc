@@ -1,13 +1,22 @@
 #include <sndfile.hh>
 #include <cstdio>
+#include <iostream>
 #include "track.h"
 
-#define BufferSIZE 1024000
+using std::cout;
+#define BufferSIZE 3000
+
 track::track(const char* filename)
 {
     file = SndfileHandle(filename);
-    buffer = new short[BufferSIZE];
-    file.read(buffer,BufferSIZE);
+    
+    this->FrameOffset = 0;
+    this->Currentframe = 0;
+    this->Totalframes = file.seek(0,SF_SEEK_END);
+    
+    file.seek(0,SF_SEEK_SET);
+    this->buffer = new short[BufferSIZE];
+    Readbuffer();
 }
 
 void track::SetPan(double a)
@@ -24,6 +33,8 @@ void track::SetVolume(double a)
 
 void track::Process()
 {
+    //double Gr,Gl;
+    //cout<<"Buffer after process: ";
     for (int i = 0; i < BufferSIZE;i++)
     {
         buffer[i] *= volume;
@@ -37,15 +48,55 @@ void track::Process()
             if (pan<0)
                 buffer[i]*=pan+1;
         }
+        //cout<<buffer[i]<<" ,";
     }
+    
+    
+    
+    ////// Insert Effects here
 }
 
-short track::Getsample(int i)
+short* track::Getsample(sf_count_t i)
 {
-    return buffer[i];
+    short* out;
+    if (i > Totalframes*2)
+        eof = true;
+    else
+    {
+        //cout<<"entered for i:" << i <<"\n";
+        int offset = (int)i/2;// / BufferSIZE);
+        
+        int index = i % BufferSIZE;
+        //cout<<"Frameoffset: " << FrameOffset << " offset: " <<offset <<"\n";
+        if ( FrameOffset - offset == 0 )
+        {
+            //cout<<"Buffer Read for i:" << i <<"\n";
+            //FrameOffset = offset;
+            //Currentframe = file.seek((int)i/2,SF_SEEK_SET);
+            Readbuffer();
+        }
+        if (eof)
+            eof = false;
+        out = new short[2];
+        out[0] = buffer[index];
+        out[1] = buffer[index+1];
+    }
+    return out;
 }
 
 short* track::Getbuffer()
 {
     return buffer;
+}
+
+sf_count_t track::GetTotalFrames()
+{
+    return Totalframes;
+}
+
+void track::Readbuffer()
+{
+    sf_count_t read = file.readf(buffer,BufferSIZE/2);
+    Process();
+    FrameOffset += read;
 }
