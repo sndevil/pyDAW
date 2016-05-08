@@ -21,7 +21,7 @@ INCDIR    = include
 LIBDIR    = /usr/local/lib
 
 OUT=bin/out
-OBJ=obj/main.o
+OBJ=obj/main.o obj/track.o
 PREFLAGS    := -Wall -g -O6 -I$(INCDIR)
 
 # Uncomment the following line for static linking (more portable executable)
@@ -44,9 +44,10 @@ all: gccDAW
 gccDAW: $(OBJ)
 	$(GCC) $(PREFLAGS) $^ -o $(OUT) $(POSTFLAGS) $(FLG)
 
-obj/main.o: src/main.cc
+obj/main.o: src/main.cc obj/track.o
 	$(GCC) $(PREFLAGS) -c $^ -o $@ $(POSTFLAGS) $(FLG)
-	
+obj/track.o: src/track.cc
+	$(GCC) $(PREFLAGS) -c $^ -o $@ $(POSTFLAGS) $(FLG)
 
 lib: library
 library:
