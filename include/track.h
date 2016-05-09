@@ -19,6 +19,7 @@ private:
     void Readbuffer();
     double pan = 0,volume = 1;
     sf_count_t Totalframes,Currentframe,FrameOffset;
+    sf_count_t PositionInLine;
     SndfileHandle file;
     short* buffer;
     

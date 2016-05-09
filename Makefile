@@ -21,13 +21,13 @@ INCDIR    = include
 LIBDIR    = /usr/local/lib
 
 OUT=bin/out
-OBJ=obj/main.o obj/track.o
+OBJ=obj/main.o obj/track.o obj/functions.o
 PREFLAGS    := -Wall -g -O6 -I$(INCDIR)
 
 # Uncomment the following line for static linking (more portable executable)
 # PREFLAGS += -static
 
-POSTFLAGS := -L$(LIBDIR) -lsndfile
+POSTFLAGS := -L$(LIBDIR) -lsndfile -lm
 
 GCC=g++
 FLG=-std=c++14
@@ -44,9 +44,11 @@ all: gccDAW
 gccDAW: $(OBJ)
 	$(GCC) $(PREFLAGS) $^ -o $(OUT) $(POSTFLAGS) $(FLG)
 
-obj/main.o: src/main.cc obj/track.o
-	$(GCC) $(PREFLAGS) -c $^ -o $@ $(POSTFLAGS) $(FLG)
+obj/main.o: src/main.cc obj/track.o obj/functions.o
+	$(GCC) $(PREFLAGS) -c $< -o $@ $(POSTFLAGS) $(FLG)
 obj/track.o: src/track.cc
+	$(GCC) $(PREFLAGS) -c $^ -o $@ $(POSTFLAGS) $(FLG)
+obj/functions.o: src/functions.cc
 	$(GCC) $(PREFLAGS) -c $^ -o $@ $(POSTFLAGS) $(FLG)
 
 lib: library
@@ -54,8 +56,8 @@ library:
 	$(MAKE) -f Makefile.library
 
 clean:
-	rm $(OUT)
 	rm $(OBJ)
+	rm $(OUT)
 %: 
 	@echo compiling file $@
 	$(MAKE) -f Makefile.examples $@

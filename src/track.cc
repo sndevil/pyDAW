@@ -1,7 +1,9 @@
 #include <sndfile.hh>
 #include <cstdio>
 #include <iostream>
+#include <math.h>
 #include "track.h"
+#include "functions.h"
 
 using std::cout;
 #define BufferSIZE 3000
@@ -13,7 +15,7 @@ track::track(const char* filename)
     this->FrameOffset = 0;
     this->Currentframe = 0;
     this->Totalframes = file.seek(0,SF_SEEK_END);
-    
+    this->PositionInLine = 0;
     file.seek(0,SF_SEEK_SET);
     this->buffer = new short[BufferSIZE];
     Readbuffer();
@@ -51,6 +53,12 @@ void track::Process()
         //cout<<buffer[i]<<" ,";
     }
     
+    for (int i = 0; i < BufferSIZE;i++)
+        buffer[i] = 32767*sin(2*3.14159265/(double)BufferSIZE);
+    fft(buffer,BufferSIZE);
+    
+    for (int i = 0; i < BufferSIZE;i++)
+        cout<<buffer[i]<<" _ ";
     
     
     ////// Insert Effects here

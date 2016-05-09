@@ -30,11 +30,11 @@ int main(int argc, const char * argv[]) {
     //cout<<"Constructing t\n";
     track t(fread);
     //cout<<"Constructing fout\n";
-    SndfileHandle fout = SndfileHandle(fname,SFM_WRITE,SF_FORMAT_WAV|SF_FORMAT_PCM_16,2,44100);
-    sf_count_t counter = 0;
-    sf_count_t total = t.GetTotalFrames()*2;
+    //SndfileHandle fout = SndfileHandle(fname,SFM_WRITE,SF_FORMAT_WAV|SF_FORMAT_PCM_16,2,44100);
+    //sf_count_t counter = 0;
+    //sf_count_t total = t.GetTotalFrames()*2;
     //cout<<"Entering While\n";
-    while (!t.eof)
+    /*while (!t.eof)
     {
         fout.writef(t.Getsample(counter),1);
         counter+=2;
@@ -42,7 +42,7 @@ int main(int argc, const char * argv[]) {
             break;
         if (counter %10000==0)
             cout<<100*(double)counter/total<<"%\n";
-    }
+    }*/
 
     puts ("Done.\n") ;
     return 0;
