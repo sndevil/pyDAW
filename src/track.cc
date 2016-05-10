@@ -6,7 +6,7 @@
 #include "functions.h"
 
 using std::cout;
-#define BufferSIZE 3000
+#define BufferSIZE 4096
 
 track::track(const char* filename)
 {
@@ -37,6 +37,10 @@ void track::Process()
 {
     //double Gr,Gl;
     //cout<<"Buffer after process: ";
+    
+    double fftr[BufferSIZE], ffti[BufferSIZE];
+    short buffer2[BufferSIZE];
+    
     for (int i = 0; i < BufferSIZE;i++)
     {
         buffer[i] *= volume;
@@ -53,12 +57,22 @@ void track::Process()
         //cout<<buffer[i]<<" ,";
     }
     
-    for (int i = 0; i < BufferSIZE;i++)
-        buffer[i] = 32767*sin(2*3.14159265/(double)BufferSIZE);
-    fft(buffer,BufferSIZE);
     
-    for (int i = 0; i < BufferSIZE;i++)
-        cout<<buffer[i]<<" _ ";
+    fft_stereo(buffer, fftr,ffti, BufferSIZE);
+    //for (int i = 0; i < BufferSIZE;i++)
+    //{
+    //    cout<<sqrt(pow(fftr[i],2)+pow(ffti[i],2))<<" _ ";
+    //}
+    //Highpass(500, 1,100,file.samplerate,fftr, ffti,BufferSIZE);
+    
+    Reverse_fft_stereo(fftr, ffti, buffer, BufferSIZE);
+    
+    //for (int i = 0; i < BufferSIZE;i++)
+    //    buffer[i] = 32767*sin(2*3.14159265/(double)BufferSIZE);
+    //fft(buffer,BufferSIZE);
+    
+    //for (int i = 0; i < BufferSIZE;i++)
+    //    cout<<buffer[i]<<" _ ";
     
     
     ////// Insert Effects here
