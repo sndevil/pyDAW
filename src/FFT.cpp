@@ -11,12 +11,17 @@
 
 #define PI 3.14159265
 #define Size 2048
+
+#define SampleRate 48000
+
 using std::cout;
 
 void fft(double* input, double* outputr,double*outputi , int size);
 void fft2(double* input,double*inputi , int size);
 void equaliser(double* inputr, double* inputi,int size);
 void Reverse_fft(double* inputr, double* inputi, double* out, int size);
+void Highpass(int freq, int gain,int bw,double* inputr, double* inputi, int size);
+void Lowpass(int freq, int gain,int bw,double* inputr, double* inputi, int size);
 
 int _tmain(int argc, _TCHAR* argv[])
 {
@@ -32,7 +37,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	for (int i = 0; i < Size;i++)
 	{
 		int counter = 0;
-		t = (double)i/48000;
+		t = (double)i/SampleRate;
 		input[i] = 0;
 		for (double f = 200;f < 20050;f+=500)
 		{
@@ -48,6 +53,7 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	fft(input,outputr,outputi,Size);
 	equaliser(outputr, outputi,Size);
+	Highpass(5000,1,3000,outputr,outputi,Size);
 	//fft2(outputr,outputi,2048);
 
 	Reverse_fft(outputr,outputi,inputreversed,Size);
@@ -155,6 +161,30 @@ void equaliser(double* inputr, double* inputi,int size)
 	{
 		inputr[i] = inputr[i] * equaliser[i];
 		inputi[i] = inputi[i] * equaliser[i];
+	}
+
+}
+
+void Highpass(int freq, int gain,int bw,double* inputr, double* inputi, int size)
+{
+	double filter[Size];
+	double alpha = bw / 4.605;
+	double deltaf = SampleRate / Size;
+	for (int i = 1 ; i <= Size; i ++)
+	{
+		if (i*deltaf < freq - 2*bw)
+			filter[i-1] = 0;
+		else
+			filter[i-1] = gain * (1 - exp(-(i * deltaf) / alpha));
+
+		if (filter[i-1] < 0)
+			filter[i-1] = 0;
+	}
+	
+	for (int i = 0; i < Size; i++)
+	{
+		inputr[i] = inputr[i] * filter[i];
+		inputi[i] = inputi[i] * filter[i];
 	}
 
 }
