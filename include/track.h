@@ -10,8 +10,8 @@ public:
     void SetPan(double a);
     void SetVolume(double a);
     void Process();
-    short* Getsample(sf_count_t i);
-    short* Getbuffer();
+    double* Getsample(sf_count_t i);
+    double* Getbuffer();
     sf_count_t GetTotalFrames();
     bool eof = false;
     
@@ -21,7 +21,7 @@ private:
     sf_count_t Totalframes,Currentframe,FrameOffset;
     sf_count_t PositionInLine;
     SndfileHandle file;
-    short* buffer;
+    double* buffer;
     
     
 };

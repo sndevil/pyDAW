@@ -27,17 +27,20 @@ int main(int argc, const char * argv[]) {
     const char * fname = "/Users/mohammadrezarezaei/1.wav" ;
     const char * fread = "/Users/mohammadrezarezaei/Documents/Projects/DAW/Test.wav";
     
-    //cout<<"Constructing t\n";
+    cout<<"Constructing t\n";
     track t(fread);
-    //cout<<"Constructing fout\n";
+    
+    cout<<"Constructing fout\n";
     SndfileHandle fout = SndfileHandle(fname,SFM_WRITE,SF_FORMAT_WAV|SF_FORMAT_PCM_16,2,44100);
     sf_count_t counter = 0;
     sf_count_t total = t.GetTotalFrames()*2;
-    //cout<<"Entering While\n";
+    cout<<"Entering While\n";
     
     while (!t.eof)
     {
+        cout<<"Writing Started\n";
         fout.writef(t.Getsample(counter),1);
+        cout<<"Writing done\n";
         counter+=2;
         if (counter >= total -2)
             break;
