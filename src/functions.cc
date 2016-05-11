@@ -64,8 +64,8 @@ void fft_stereo(short* input, double* outputr,double*outputi , int size)
         for (int j = 1 ; j < size ; j+=2)
         {
             short temp = tPi * (double)i*j;
-            r += (double)input[j]/32767 * cos(temp);
-            im -= (double)input[j]/32767 * sin(temp);
+            r += (double)input[j] * cos(temp);
+            im -= (double)input[j] * sin(temp);
         }
         outputr[i] = r;//outputr[size-i-1] = r;
         outputi[i] = im;
@@ -130,7 +130,7 @@ void Reverse_fft_stereo(double* inputr, double* inputi, short* out, int size)
             double temp = tPi * (double)i*j;
             r += inputr[j]*cos(temp) - inputi[j]*sin(temp);
         }
-        out[i] = r / size * 32767;
+        out[i] = r / size;// * 32767;
     }
     for (int i = 1; i < size; i+=2)
     {
@@ -140,7 +140,7 @@ void Reverse_fft_stereo(double* inputr, double* inputi, short* out, int size)
             double temp = tPi * (double)i*j;
             r += inputr[j]*cos(temp) - inputi[j]*sin(temp);
         }
-        out[i] = r / size * 32767;
+        out[i] = r / size;// * 32767;
     }
 }
 

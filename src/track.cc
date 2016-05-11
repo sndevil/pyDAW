@@ -40,10 +40,10 @@ void track::Process()
     
     double fftr[BufferSIZE], ffti[BufferSIZE];
     short buffer2[BufferSIZE];
-    
     for (int i = 0; i < BufferSIZE;i++)
     {
-        buffer[i] *= volume;
+        double t = (double)i / file.samplerate();
+        /*buffer[i] *= volume;
         if (i%2==0) //rightchannel
         {
             if (pan > 0)
@@ -53,20 +53,26 @@ void track::Process()
         {
             if (pan<0)
                 buffer[i]*=pan+1;
-        }
+        }*/
+        buffer[i] = 32767 * sin(2*3.14159265* 200 * t);
         //cout<<buffer[i]<<" ,";
     }
     
     
     fft_stereo(buffer, fftr,ffti, BufferSIZE);
-    //for (int i = 0; i < BufferSIZE;i++)
-    //{
-    //    cout<<sqrt(pow(fftr[i],2)+pow(ffti[i],2))<<" _ ";
-    //}
+    for (int i = 0; i < BufferSIZE;i++)
+    {
+        cout<<i<<" : " <<sqrt(pow(fftr[i],2)+pow(ffti[i],2))<<"\n";
+    }
     //Highpass(500, 1,100,file.samplerate,fftr, ffti,BufferSIZE);
     
-    Reverse_fft_stereo(fftr, ffti, buffer, BufferSIZE);
+    Reverse_fft_stereo(fftr, ffti, buffer2, BufferSIZE);
     
+    double error= 0;
+    for (int i = 0; i < BufferSIZE;i++)
+        error += buffer2[i] - buffer[i];
+    error/= BufferSIZE;
+    cout<<"Error: " << error<<"\n";
     //for (int i = 0; i < BufferSIZE;i++)
     //    buffer[i] = 32767*sin(2*3.14159265/(double)BufferSIZE);
     //fft(buffer,BufferSIZE);
