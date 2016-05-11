@@ -34,10 +34,9 @@ int _tmain(int argc, _TCHAR* argv[])
 	double inputi[Size],outputr[Size],outputi[Size];
 	char strout[40];
 	double error=0;
-	//FILE* f;
+
 	FILE* f = fopen("D://out.txt","w");
 	FILE* f2 = fopen("D://out2.txt","w");
-	//double list[8]={35,150,690,750,900,5000,8100,10000};
 
 	double t = 0,arg=0;
 	for (int i = 0; i < Size;i+=2)
@@ -45,11 +44,11 @@ int _tmain(int argc, _TCHAR* argv[])
 		int counter = 0;
 		t = (double)i/SampleRate;
 		input[i] = input[i+1] = 0;
-		for (double f = 1000;f < 4050;f+=500)
+		for (double f = 100;f < 25050;f+=500)
 		{
-			arg=sin(2*PI*t*f);//* 32767;
+			arg=sin(2*PI*t*f);
 			input[i] += arg;// + sin((double)i/256*PI) + sin((double)i/2*PI);
-			arg=sin(2*PI*t*f*5+10);//* 32767;
+			arg=sin(2*PI*t*f*5+10);
 			input[i+1] += arg;
 			counter++;
 
@@ -59,17 +58,16 @@ int _tmain(int argc, _TCHAR* argv[])
 		inputi[i] = 0;
 		outputi[i] = 0;
 	}
-
+	Limiter(1,0,input,Size);
 	fft_stereo(input,outputr,outputi,Size);
-	double eqbands[6] = {20000,200,-0.5};
-	equaliser(eqbands,1, outputr, outputi,Size);
-	//bands { CenterFreq , BW , gain }
-	Highpass(2000,1,2000,outputr,outputi,4096);
-	//fft2(outputr,outputi,2048);
+	double eqbands[6] = {15000,3000,-0.9,15000,1000,1};
+	equaliser(eqbands,2, outputr, outputi,Size);
+	Highpass(10000,1,1000,outputr,outputi,4096);
+	Lowpass(20000,1,1000,outputr,outputi,4096);
 
 	Reverse_fft_stereo(outputr,outputi,inputreversed,Size);
 
-	Limiter(0.99, 1,inputreversed, Size);
+	Limiter(1, 1,inputreversed, Size);
 
 	for (int i = 0; i < Size/2;i++)
 	{
@@ -109,9 +107,8 @@ void fft(short* input, short* outputr,short*outputi , int size)
             r += input[j] * cos(temp);
             im -= input[j] * sin(temp);
         }
-        outputr[i] = r;//outputr[size-i-1] = r;
+        outputr[i] = r;
         outputi[i] = im;
-        //outputi[size-i-1] = -im;
     }
 }
 
@@ -129,14 +126,13 @@ void fft_stereo(double* input, double* outputr,double*outputi , int size)
         for (int j = 0 ; j < size ; j+=2)
         {
             double temp = tPi * (double)ci*cj;
-            r += input[j] * cos(temp);///32767
+            r += input[j] * cos(temp);
             im -= input[j] * sin(temp);
 			cj++;
         }
-        outputr[i] = r;//outputr[size-i-1] = r;
+        outputr[i] = r;
         outputi[i] = im;
 		ci++;
-        //outputi[size-i-1] = -im;
     }
 	ci = cj = 0;
     for (int i = 1; i < size; i+=2)
@@ -151,10 +147,9 @@ void fft_stereo(double* input, double* outputr,double*outputi , int size)
             im -= input[j] * sin(temp);
 			cj++;
         }
-        outputr[i] = r;//outputr[size-i-1] = r;
+        outputr[i] = r;
         outputi[i] = im;
 		ci++;
-        //outputi[size-i-1] = -im;
     }
 }
 
@@ -198,7 +193,7 @@ void Reverse_fft(short* inputr, short* inputi, short* out, int size)
             double temp = tPi * (double)i*j/size;
             r += inputr[j]*cos(temp) - inputi[j]*sin(temp);
         }
-        out[i] = r / size * 2;// * 32767;
+        out[i] = r / size * 2;
     }
 }
 
@@ -214,7 +209,7 @@ void Reverse_fft_stereo(double* inputr, double* inputi, double* out, int size)
         for (int j = 0; j < size; j+=2)
         {
             double temp = tPi * (double)ci*cj;
-            r += inputr[j]*cos(temp) - inputi[j]*sin(temp);//*32767
+            r += inputr[j]*cos(temp) - inputi[j]*sin(temp);
 			cj++;
         }
         out[i] = r / size * 2;
@@ -242,7 +237,6 @@ void equaliser(double* bands,int bandcount,double* inputr, double* inputi,const 
 
 	//  gain * exp -(x - centerfreq)^2 / BW^2
 
-    //Cut between 1khz and 2khz
     double equaliser[Size];
 	double S = size / 2;
 	double deltaf = SampleRate / S;
@@ -277,8 +271,8 @@ void Highpass(int freq, int gain,int bw,double* inputr, double* inputi,const int
 {
 	const int S = 2048;
     double filter[S];
-    double alpha = bw;// / 4.605;
-    double deltaf = SampleRate / S;
+    double alpha = bw;
+    double deltaf = SampleRate / S * 2;
     for (int i = 1 ; i <= S; i ++)
     {
         if (i*deltaf < freq - 2*bw)
@@ -289,7 +283,7 @@ void Highpass(int freq, int gain,int bw,double* inputr, double* inputi,const int
         if (filter[i-1] < 0)
             filter[i-1] = 0;
     }
-    // x-1 / x = 0.707
+
     for (int i = 0; i < size/2; i+=2)
     {
         inputr[i] = inputr[i] * filter[i];
@@ -302,6 +296,37 @@ void Highpass(int freq, int gain,int bw,double* inputr, double* inputi,const int
 		inputi[size - i - 1] = inputi[size - i - 1] * filter[i];
     }
 }
+
+void Lowpass(int freq, int gain,int bw,double* inputr, double* inputi,const int size)
+{
+	const int S = 2048;
+    double filter[S];
+    double alpha = bw;
+    double deltaf = SampleRate / S / 2;
+    for (int i = 1 ; i <= S; i ++)
+    {
+        if (i*deltaf > freq + 2*bw)
+            filter[i-1] = 0;
+        else
+            filter[i-1] = gain * (3.4142 - exp(-(freq - (i * deltaf)) / alpha))/3.4142;
+        
+        if (filter[i-1] < 0)
+            filter[i-1] = 0;
+    }
+
+    for (int i = 0; i < size/2; i+=2)
+    {
+        inputr[i] = inputr[i] * filter[i];
+		inputr[size-i] = inputr[size-i] * filter[i];
+        inputr[i+1] = inputr[i+1]*filter[i];
+		inputr[size-i-1] = inputr[size-i-1] * filter[i];
+        inputi[i] = inputi[i] * filter[i];
+		inputi[size - i] = inputi[size - i] * filter[i];
+        inputi[i+1] = inputi[i+1] * filter[i];
+		inputi[size - i - 1] = inputi[size - i - 1] * filter[i];
+    }
+}
+
 
 void Limiter(double cut, double gain,double* input, const int size)
 {
