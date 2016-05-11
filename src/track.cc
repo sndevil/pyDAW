@@ -10,18 +10,18 @@ using std::cout;
 
 track::track(const char* filename)
 {
-    cout<<"Entered Constructor\n";
+    //cout<<"Entered Constructor\n";
     file = SndfileHandle(filename);
-    cout<<"Opened File\n";
+    //cout<<"Opened File\n";
     this->FrameOffset = 0;
     this->Currentframe = 0;
     this->Totalframes = file.seek(0,SF_SEEK_END);
     this->PositionInLine = 0;
     file.seek(0,SF_SEEK_SET);
     this->buffer = new double[BufferSIZE];
-    cout<<"Reading buffer\n";
+    //cout<<"Reading buffer\n";
     Readbuffer();
-    cout<<"Buffer read\n";
+    //cout<<"Buffer read\n";
 }
 
 void track::SetPan(double a)
@@ -43,9 +43,10 @@ void track::Process()
     
     double fftr[BufferSIZE], ffti[BufferSIZE];
     double buffer2[BufferSIZE];
+    double samplerate = file.samplerate();
     for (int i = 0; i < BufferSIZE;i++)
     {
-        double t = (double)i / file.samplerate();
+        double t = (double)i / samplerate;
         buffer[i] *= volume;
         if (i%2==0) //rightchannel
         {
@@ -68,15 +69,17 @@ void track::Process()
     //{
     //    cout<<i<<" : " <<sqrt(pow(fftr[i],2)+pow(ffti[i],2))<<"\n";
     //}
-    //Highpass(500, 1,100,file.samplerate,fftr, ffti,BufferSIZE)
-    //double eqbands[3] = {2000,1000,-0.8};
-    //equaliser(eqbands,1,file.samplerate(),fftr , ffti,BufferSIZE);
+    Highpass(10000, 1,100,samplerate,fftr, ffti,BufferSIZE);
+    //double eqbands[6] = {2000,1000,-0.8,10000,2000,0.6};
+    //equaliser(eqbands,2,file.samplerate(),fftr , ffti,BufferSIZE);
 
 
-    
+    //cout<<"EQ ended\n";
     Reverse_fft_stereo(fftr, ffti, buffer, BufferSIZE);
+    //cout<<"ReverseFFT ended\n";
     //std::cout<<" eq done\n";
-    //Limiter(1, 1,buffer, BufferSIZE);
+    Limiter(1, 0.99,buffer, BufferSIZE);
+    //cout<<"Limiter ended\n";
     //double error= 0;
     //for (int i = 0; i < BufferSIZE;i++)
     //    error += abs(buffer2[i] - buffer[i]);
@@ -86,16 +89,17 @@ void track::Process()
     //    buffer[i] = 32767*sin(2*3.14159265/(double)BufferSIZE);
     //fft(buffer,BufferSIZE);
     
-    //for (int i = 0; i < BufferSIZE;i++)
-    //    cout<<buffer[i]<<" _ ";
+    /*for (int i = 0; i < BufferSIZE;i++)
+    {
+        //cout<<i<<" : "<<buffer[i]<<"\n";
+        if (buffer[i]>1||buffer[i]<-1)
+            cout<<i<<":"<<buffer[i]<<"\n";
+    }*/
     
-    
-    ////// Insert Effects here
 }
 
 double* track::Getsample(sf_count_t i)
 {
-    cout<<"Getting sample\n";
     double* out;
     if (i > Totalframes*2)
         eof = true;
@@ -119,7 +123,6 @@ double* track::Getsample(sf_count_t i)
         out[0] = buffer[index];
         out[1] = buffer[index+1];
     }
-    cout<<"sample done\n";
     return out;
 }
 
@@ -135,12 +138,12 @@ sf_count_t track::GetTotalFrames()
 
 void track::Readbuffer()
 {
-    cout<<"Entered Reading buffer\n";
+    //cout<<"Entered Reading buffer\n";
     sf_count_t read = file.readf(buffer,BufferSIZE/2);
-    cout<<"read:"<< read<<" Frameoffset: " <<FrameOffset<<" Processing\n";
     Process();
-    cout<<"Process done\n";
-    
+    //cout<<"Process done\n";
+    //cout<<"increasing frameoffset\n";
+    //    cout<<"read:"<< read<<" Frameoffset: " <<FrameOffset<<" Processing\n";
     FrameOffset += read;
-    cout<<"Frameoffset: " <<FrameOffset<<"\n";
+    //cout<<"Frameoffset: " <<FrameOffset<<"\n";
 }

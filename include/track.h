@@ -18,8 +18,8 @@ public:
 private:
     void Readbuffer();
     double pan = 0,volume = 1;
-    sf_count_t Totalframes,Currentframe,FrameOffset;
-    sf_count_t PositionInLine;
+    sf_count_t Totalframes=0,Currentframe=0,FrameOffset=0;
+    sf_count_t PositionInLine=0;
     SndfileHandle file;
     double* buffer;
     
