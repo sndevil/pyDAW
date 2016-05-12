@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <iostream>
 #include <string.h>
+#include <fftw3.h>
 
 #define PI 3.14159265
 
@@ -158,15 +159,14 @@ static double* tempbandsEQ;
 static int bandcountEQ=0;
 static bool EQSaved = false;
 static double* tempfilterEQ;
-void equaliser(double* bands,int bandcount,int SampleRate,double* inputr, double* inputi,const int size)
+void equaliser(double* bands,int bandcount,int SampleRate,fftw_complex* buffer,const int size)
 {
     //bands { CenterFreq , BW , gain }
     
     //  gain * exp -(x - centerfreq)^2 / BW^2
     
     //double equaliser[size];
-    double S = size / 2;
-    double deltaf = SampleRate / S;
+    double deltaf = SampleRate / size / 2;
     static int ftempEQ,gtempEQ,bwtempEQ;
     static bool EQSaved;
     static double* tempfilterEQ;
@@ -199,7 +199,7 @@ void equaliser(double* bands,int bandcount,int SampleRate,double* inputr, double
         tempbandsEQ = new double[3*bandcount];
         tempfilterEQ = new double[size];
         bandcountEQ = bandcount;
-        for (int i = 0 ; i < S; i ++)
+        for (int i = 0 ; i <= size; i ++)
         {
             
             tempfilterEQ[i] = 1;
@@ -210,7 +210,7 @@ void equaliser(double* bands,int bandcount,int SampleRate,double* inputr, double
                     CF = tempbandsEQ[3*j]= bands[3*j];
                     BW = tempbandsEQ[3*j+1] = bands[3*j+1];
                     Gain = tempbandsEQ[3*j+2] = bands[3*j+2];
-                    tempfilterEQ[i] += Gain * exp(-(pow(i/2*deltaf - CF,2)/pow(BW,2)));
+                    tempfilterEQ[i] += Gain * exp(-(pow(i*deltaf - CF,2)/pow(BW,2)));
                 }
             }
             else
@@ -220,25 +220,20 @@ void equaliser(double* bands,int bandcount,int SampleRate,double* inputr, double
         EQSaved = true;
     }
    // std::cout<<"EQ run \n";
-    for (int i = 0; i < size/2; i+=2)
+    for (int i = 0; i <= size; i++)
     {
-        inputr[i] *= tempfilterEQ[i];
-        inputr[size-i] *= tempfilterEQ[i];
-        inputr[i+1] *= tempfilterEQ[i];
-        inputr[size-i-1] *= tempfilterEQ[i];
-        inputi[i] *= tempfilterEQ[i];
-        inputi[size - i] *= tempfilterEQ[i];
-        inputi[i+1] *= tempfilterEQ[i];
-        inputi[size - i - 1] *= tempfilterEQ[i];
+        //std::cout<<i<<" : "<<tempfilter[i]<<"\n";
+        buffer[i][0] *= tempfilterEQ[i];
+        buffer[i][1] *= tempfilterEQ[i];
     }
     //std::cout<<"EQ Done\n";
 }
 static int ftempHP=0,gtempHP=0,bwtempHP=0;
 static bool HPSaved = false;
 static double* tempfilterHP;
-void Highpass(int freq, int gain,int bw,int SampleRate,double* inputr, double* inputi,const int size)
+void Highpass(int freq, int gain,int bw,int SampleRate,fftw_complex* buffer,const int size)
 {
-    const int S = size/2;
+    //const int S = size/2;
     static int ftemp,gtemp,bwtemp;
     static bool HPSaved;
     static double* tempfilter;
@@ -251,9 +246,9 @@ void Highpass(int freq, int gain,int bw,int SampleRate,double* inputr, double* i
         bwtemp = bw;
         gtemp = gain;
         ftemp = freq;
-        double deltaf = SampleRate / S * 2;
-        tempfilter = new double[size/2];
-        for (int i = 1 ; i <= S+1; i ++)
+        double deltaf = SampleRate / size / 2;
+        tempfilter = new double[size+1];
+        for (int i = 1 ; i <= size; i ++)
         {
             double tempval;
             if (i*deltaf < freq - 2*bw)
@@ -264,21 +259,16 @@ void Highpass(int freq, int gain,int bw,int SampleRate,double* inputr, double* i
             if (tempval < 0)
                 tempval = 0;
             tempfilter[i-1] = tempval;
-
         }
+        tempfilter[size] = tempfilter[size-1];
         HPSaved = true;
     }
-    //std::cout<<size/2<<"\n";
-    for (int i = 0; i < size/2; i+=2)
+
+    for (int i = 0; i <= size; i++)
     {
-        inputr[i] *= tempfilter[i];
-        inputr[size-i] *= tempfilter[i];
-        inputr[i+1] *= tempfilter[i];
-        inputr[size-i-1] *= tempfilter[i];
-        inputi[i] *= tempfilter[i];
-        inputi[size - i] *= tempfilter[i];
-        inputi[i+1] *= tempfilter[i];
-        inputi[size - i - 1] *= tempfilter[i];
+        //std::cout<<i<<" : "<<tempfilter[i]<<"\n";
+        buffer[i][0] *= tempfilter[i];
+        buffer[i][1] *= tempfilter[i];
     }
     //for (int i = 0; i <size;i++)
     //    std::cout<<i<<":"<<inputi[i]<<"\n";

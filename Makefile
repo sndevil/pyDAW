@@ -58,7 +58,7 @@ library:
 
 clean:
 	rm $(OBJ)
-	rm $(OUT)
+	rm -r bin/*
 %: 
 	@echo compiling file $@
 	$(MAKE) -f Makefile.examples $@

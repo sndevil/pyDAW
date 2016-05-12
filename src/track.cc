@@ -84,28 +84,28 @@ void track::Process()
     pi2 = fftw_plan_dft_c2r_1d(BufferSIZE/2, out2, outr2,FFTW_ESTIMATE);
 
     
-    //pf = fftw_plan_dft_r2c_1d(BufferSIZE/2, in1, out1,FFTW_ESTIMATE);
     fftw_execute(p1);
-    //pf = fftw_plan_dft_r2c_1d(BufferSIZE/2, in2, out2,FFTW_ESTIMATE);
     fftw_execute(p2);
     
     
+    double eqbands[6] = {2000,1000,1};
+    equaliser(eqbands,1,samplerate,out1,BufferSIZE/4+1);
+    equaliser(eqbands,1,samplerate,out2,BufferSIZE/4+1);
+    Highpass(1000, 1,500,samplerate,out1,BufferSIZE/4+1);
+    Highpass(1000, 1,500,samplerate,out2,BufferSIZE/4+1);
     //for (int i = 0 ; i < BufferSIZE/4+1;i++)
     //{
     //    double mag =sqrt(pow(out1[i][0],2)+pow(out1[i][1],2));
-    //    if (mag > 0)
-    //        cout<<i*deltaf<<" : " <<mag<<"\n";
+        //if (mag > 0)
+    //    cout<<i*deltaf<<" : " <<mag<<"\n";
     //}
     
-    
-    //pf = fftw_plan_dft_c2r_1d(BufferSIZE/2, out1, in1,FFTW_ESTIMATE);//BufferSIZE/4
+
     fftw_execute(pi1);
-    //pf = fftw_plan_dft_c2r_1d(BufferSIZE/2, out2, in2,FFTW_ESTIMATE);
     fftw_execute(pi2);
     
     for (int i = 0;i < BufferSIZE/2;i++)
     {
-//        cout<<i<<" : "<< buffer[i*2+1]<< "  vs  " << outr2[i] << "   ,   " << out2[i][0] << "  ,  " << out2[i][1]<<"\n";
         buffer[i*2] = outr1[i]/(double)BufferSIZE * 2;
         buffer[i*2+1] = outr2[i]/(double)BufferSIZE*2;
     }
@@ -113,21 +113,21 @@ void track::Process()
     fftw_destroy_plan(p1); fftw_destroy_plan(p2); fftw_destroy_plan(pi1); fftw_destroy_plan(pi2);
     fftw_free(in1);fftw_free(in2); fftw_free(out1);fftw_free(out2);
     
+    
+    Limiter(1, 0.7,buffer, BufferSIZE);
     //fft_stereo(buffer, fftr,ffti, BufferSIZE);
     //for (int i = 0; i < BufferSIZE;i++)
     //{
     //    cout<<i<<" : " <<sqrt(pow(fftr[i],2)+pow(ffti[i],2))<<"\n";
     //}
-    //Highpass(1000, 1,100,samplerate,fftr, ffti,BufferSIZE);
-    //double eqbands[6] = {2000,1000,-0.8,10000,2000,0.6};
-    //equaliser(eqbands,2,file.samplerate(),fftr , ffti,BufferSIZE);
+    //
 
 
     //cout<<"EQ ended\n";
     //Reverse_fft_stereo(fftr, ffti, buffer, BufferSIZE);
     //cout<<"ReverseFFT ended\n";
     //std::cout<<" eq done\n";
-    //Limiter(1, 0.99,buffer, BufferSIZE);
+    //
     //cout<<"Limiter ended\n";
     //double error= 0;
     //for (int i = 0; i < BufferSIZE;i++)
