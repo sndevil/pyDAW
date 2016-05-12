@@ -48,8 +48,8 @@ int main(int argc, const char * argv[]) {
         {
             double progress = (double)counter/total*100;
             cout<<progress<<"%\n";
-            if (progress>1)
-                break;
+        //    if (progress>1)
+        //        break;
         }
     }
 
