@@ -19,6 +19,7 @@ MAKE = make
 
 INCDIR    = include
 LIBDIR    = /usr/local/lib
+FFTWDIR   = /usr/local/Cellar/fftw/3.3.4_1/lib
 
 OUT=bin/out
 OBJ=obj/main.o obj/track.o obj/functions.o
@@ -27,7 +28,7 @@ PREFLAGS    := -Wall -g -O6 -I$(INCDIR)
 # Uncomment the following line for static linking (more portable executable)
 # PREFLAGS += -static
 
-POSTFLAGS := -L$(LIBDIR) -lsndfile -lm
+POSTFLAGS := -L$(LIBDIR) -lsndfile -lm -L$(FFTWDIR) -lfftw3
 
 GCC=g++
 FLG=-std=c++14

@@ -2,6 +2,7 @@
 #include <cstdio>
 #include <iostream>
 #include <math.h>
+#include <fftw3.h>
 #include "track.h"
 #include "functions.h"
 
@@ -44,6 +45,13 @@ void track::Process()
     double fftr[BufferSIZE], ffti[BufferSIZE];
     double buffer2[BufferSIZE];
     double samplerate = file.samplerate();
+    double *in1, *in2,*outr1,*outr2;
+    in1 = (double*)fftw_malloc(sizeof(double)*BufferSIZE/2);
+    in2 = (double*)fftw_malloc(sizeof(double)*BufferSIZE/2);
+    outr1 = (double*)fftw_malloc(sizeof(double)*BufferSIZE/2);
+    outr2 = (double*)fftw_malloc(sizeof(double)*BufferSIZE/2);
+    
+    double deltaf = samplerate / (BufferSIZE/2);
     for (int i = 0; i < BufferSIZE;i++)
     {
         double t = (double)i / samplerate;
@@ -52,33 +60,74 @@ void track::Process()
         {
             if (pan > 0)
                 buffer[i]*=1-pan;
+            in1[i/2]= buffer[i];
         }
         else //leftchannel
         {
             if (pan<0)
                 buffer[i]*=pan+1;
+            in2[i/2] = buffer[i];
         }
 
-        //buffer[i] = 32767 * sin(2*3.14159265* 200 * t);
-        //cout<<buffer[i]<<" ,";
     }
     
+    fftw_complex *out1;
+    fftw_complex *out2;
+    fftw_plan p1,p2,pi1,pi2;
     
-    fft_stereo(buffer, fftr,ffti, BufferSIZE);
+    out1 = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * (BufferSIZE/4+1));
+    out2 = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * (BufferSIZE/4+1));
+    
+    p1 = fftw_plan_dft_r2c_1d(BufferSIZE/2, in1, out1,FFTW_ESTIMATE);
+    p2 = fftw_plan_dft_r2c_1d(BufferSIZE/2, in2, out2,FFTW_ESTIMATE);
+    pi1 = fftw_plan_dft_c2r_1d(BufferSIZE/2, out1, outr1,FFTW_ESTIMATE);
+    pi2 = fftw_plan_dft_c2r_1d(BufferSIZE/2, out2, outr2,FFTW_ESTIMATE);
+
+    
+    //pf = fftw_plan_dft_r2c_1d(BufferSIZE/2, in1, out1,FFTW_ESTIMATE);
+    fftw_execute(p1);
+    //pf = fftw_plan_dft_r2c_1d(BufferSIZE/2, in2, out2,FFTW_ESTIMATE);
+    fftw_execute(p2);
+    
+    
+    //for (int i = 0 ; i < BufferSIZE/4+1;i++)
+    //{
+    //    double mag =sqrt(pow(out1[i][0],2)+pow(out1[i][1],2));
+    //    if (mag > 0)
+    //        cout<<i*deltaf<<" : " <<mag<<"\n";
+    //}
+    
+    
+    //pf = fftw_plan_dft_c2r_1d(BufferSIZE/2, out1, in1,FFTW_ESTIMATE);//BufferSIZE/4
+    fftw_execute(pi1);
+    //pf = fftw_plan_dft_c2r_1d(BufferSIZE/2, out2, in2,FFTW_ESTIMATE);
+    fftw_execute(pi2);
+    
+    for (int i = 0;i < BufferSIZE/2;i++)
+    {
+//        cout<<i<<" : "<< buffer[i*2+1]<< "  vs  " << outr2[i] << "   ,   " << out2[i][0] << "  ,  " << out2[i][1]<<"\n";
+        buffer[i*2] = outr1[i]/(double)BufferSIZE * 2;
+        buffer[i*2+1] = outr2[i]/(double)BufferSIZE*2;
+    }
+    
+    fftw_destroy_plan(p1); fftw_destroy_plan(p2); fftw_destroy_plan(pi1); fftw_destroy_plan(pi2);
+    fftw_free(in1);fftw_free(in2); fftw_free(out1);fftw_free(out2);
+    
+    //fft_stereo(buffer, fftr,ffti, BufferSIZE);
     //for (int i = 0; i < BufferSIZE;i++)
     //{
     //    cout<<i<<" : " <<sqrt(pow(fftr[i],2)+pow(ffti[i],2))<<"\n";
     //}
-    Highpass(10000, 1,100,samplerate,fftr, ffti,BufferSIZE);
+    //Highpass(1000, 1,100,samplerate,fftr, ffti,BufferSIZE);
     //double eqbands[6] = {2000,1000,-0.8,10000,2000,0.6};
     //equaliser(eqbands,2,file.samplerate(),fftr , ffti,BufferSIZE);
 
 
     //cout<<"EQ ended\n";
-    Reverse_fft_stereo(fftr, ffti, buffer, BufferSIZE);
+    //Reverse_fft_stereo(fftr, ffti, buffer, BufferSIZE);
     //cout<<"ReverseFFT ended\n";
     //std::cout<<" eq done\n";
-    Limiter(1, 0.99,buffer, BufferSIZE);
+    //Limiter(1, 0.99,buffer, BufferSIZE);
     //cout<<"Limiter ended\n";
     //double error= 0;
     //for (int i = 0; i < BufferSIZE;i++)
