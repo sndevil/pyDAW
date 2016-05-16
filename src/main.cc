@@ -12,7 +12,7 @@
 #include <sndfile.hh>
 #include <cstring>
 #include <math.h>
-#include "track.h"
+#include "mixer.h"
 
 
 
@@ -26,30 +26,37 @@ using std::cout;
 int main(int argc, const char * argv[]) {
     const char * fname = "/Users/mohammadrezarezaei/1.wav" ;
     const char * fread = "/Users/mohammadrezarezaei/Documents/Projects/DAW/Test.wav";
+    const char * fread1 = "/Users/mohammadrezarezaei/Documents/Projects/DAW/Test2.wav";
+    mixer m;
     
+    m.AddTrack(fread,0);
+    m.AddTrack(fread1,0);//100000);
+    m.tracks[0].pan = -1;
+    m.tracks[1].pan = 1;
     //cout<<"Constructing t\n";
-    track t(fread);
+    //track t(fread);
     
     //cout<<"Constructing fout\n";
     SndfileHandle fout = SndfileHandle(fname,SFM_WRITE,SF_FORMAT_WAV|SF_FORMAT_PCM_16,2,44100);
     sf_count_t counter = 0;
-    sf_count_t total = t.GetTotalFrames()*2;
-    //cout<<"Entering While\n";
+    sf_count_t total = m.GetTotalFrames()*2;
+    //cout<<"Entering While "<< total <<"\n";
     
-    while (!t.eof)
+    while (!m.eof)
     {
         //cout<<"Writing Started\n";
-        fout.writef(t.Getsample(counter),1);
+        fout.writef(m.Getsample(counter),1);
         //cout<<"Writing done\n";
         counter+=2;
-        if (counter >= total -2)
+        //cout<<"channels:"<<t.channels<<"\n";
+        if (counter >= total -1)
             break;
         if (counter %100000==0)
         {
             double progress = (double)counter/total*100;
             cout<<progress<<"%\n";
-        //    if (progress>1)
-        //        break;
+            if (progress>10)
+                break;
         }
     }
 

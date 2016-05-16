@@ -228,7 +228,7 @@ void equaliser(double* bands,int bandcount,int SampleRate,fftw_complex* buffer,c
     }
     //std::cout<<"EQ Done\n";
 }
-static int ftempHP=0,gtempHP=0,bwtempHP=0;
+//static int ftempHP=0,gtempHP=0,bwtempHP=0;
 static bool HPSaved = false;
 static double* tempfilterHP;
 void Highpass(int freq, int gain,int bw,int SampleRate,fftw_complex* buffer,const int size)

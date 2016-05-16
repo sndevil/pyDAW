@@ -1,26 +1,23 @@
 #include <sndfile.hh>
+#include "track.h"
 #include <cstdio>
 
-#define Maxfiles 10
-
-class track
+class mixer
 {
 public:
-    track(const char* filename);
-    void SetPan(double a);
-    void SetVolume(double a);
+    mixer();
+    void AddTrack(const char* filename,sf_count_t position);
     void Process();
     double* Getsample(sf_count_t i);
     double* Getbuffer();
     sf_count_t GetTotalFrames();
     bool eof = false;
-    
+        track* tracks;
 private:
     void Readbuffer();
     double pan = 0,volume = 1;
     sf_count_t Totalframes=0,Currentframe=0,FrameOffset=0;
-    sf_count_t PositionInLine=0;
-    SndfileHandle file;
+    int trackcount = 0;
     double* buffer;
     
     
