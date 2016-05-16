@@ -25,12 +25,18 @@ using std::cout;
 
 int main(int argc, const char * argv[]) {
     const char * fname = "/Users/mohammadrezarezaei/1.wav" ;
-    const char * fread = "/Users/mohammadrezarezaei/Documents/Projects/DAW/Test.wav";
-    const char * fread1 = "/Users/mohammadrezarezaei/Documents/Projects/DAW/Test2.wav";
+    const char * fread = "/Users/mohammadrezarezaei/Documents/Projects/DAW/guitar1.wav";
+    const char * fread1 = "/Users/mohammadrezarezaei/Documents/Projects/DAW/guitar2.wav";
+    const char * fread2 = "/Users/mohammadrezarezaei/Documents/Projects/DAW/Kick.wav";
+    const char * fread3 = "/Users/mohammadrezarezaei/Documents/Projects/DAW/Snare.wav";
+    const char * fread4 = "/Users/mohammadrezarezaei/Documents/Projects/DAW/Overhead.wav";
     mixer m;
     
-    m.AddTrack(fread,0);
-    m.AddTrack(fread1,0);//100000);
+    m.AddTrack(fread,150000);
+    m.AddTrack(fread1,150000);//100000);
+    m.AddTrack(fread2,0);
+    m.AddTrack(fread3,0);
+    m.AddTrack(fread4,0);
     m.tracks[0].pan = -1;
     m.tracks[1].pan = 1;
     //cout<<"Constructing t\n";
@@ -50,13 +56,16 @@ int main(int argc, const char * argv[]) {
         counter+=2;
         //cout<<"channels:"<<t.channels<<"\n";
         if (counter >= total -1)
+        {
+            cout<<"Broke\n";
             break;
+        }
         if (counter %100000==0)
         {
             double progress = (double)counter/total*100;
             cout<<progress<<"%\n";
-            if (progress>10)
-                break;
+            //if (progress>10)
+            //    break;
         }
     }
 

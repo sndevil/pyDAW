@@ -260,7 +260,6 @@ void track::Readbuffer()
 {
     //cout<<"Entered Reading buffer\n";
     sf_count_t read = file.readf(buffer,BufferSIZE/channels);
-    
     //cout<<"Processing\n";
     if (channels > 1)
         Process();

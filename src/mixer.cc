@@ -41,14 +41,16 @@ void mixer::Readbuffer()
     for (int i = 0;i < BufferSIZE;i+=2)
     {
         int pos = FrameOffset + i;
+        //int posmono = FrameOffsetMono+ i/2;
         //cout<<"position:"<<pos<<"\n";
         buffer[i] = 0;
         buffer[i+1] = 0;
         for (int j = 0; j < trackcount;j++)
         {
-            
-            if (pos > tracks[j].GetTotalFrames() + tracks[j].PositionInLine || pos < tracks[j].PositionInLine)
+            int mul = (tracks[j].channels ==1)?2:1;
+            if (pos > tracks[j].GetTotalFrames()*mul + tracks[j].PositionInLine || pos < tracks[j].PositionInLine)
             {
+                //cout<<"Ended\n";
                 buffer[i] += 0;
                 buffer[i+1] += 0;
             }
@@ -57,8 +59,11 @@ void mixer::Readbuffer()
                 if (tracks[j].channels == 1)
                 {
                     double* input = tracks[j].Getsample((pos-tracks[j].PositionInLine)/2);
-                    buffer[i] += input[0];
-                    buffer[i+1] += input[0];
+                    double dr,dl;
+                    dl = input[0] * (tracks[j].pan+1)/2;
+                    dr = input[0] * (tracks[j].pan-1)/-2;
+                    buffer[i] += dr;
+                    buffer[i+1] += dl;
                 }
                 else
                 {
@@ -74,7 +79,10 @@ void mixer::Readbuffer()
         //buffer[i] +=input[0];
         //buffer[i+1] +=input[1];
     }
+    
+    //for (int i = 0; i)
     FrameOffset+= BufferSIZE;
+    //FrameOffsetMono+= BufferSIZE/2;
     
 }
 void mixer::Process()
