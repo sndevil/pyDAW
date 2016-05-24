@@ -5,12 +5,13 @@
 //  Created by Mohammadreza Rezaei on 5/9/16.
 //
 //
+#include "Stdafx.h"
 #include <math.h>
 #include "functions.h"
 #include <stdio.h>
 #include <iostream>
 #include <string.h>
-#include <fftw3.h>
+#include "fftw3.h"
 
 #define PI 3.14159265
 

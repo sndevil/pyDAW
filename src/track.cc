@@ -1,8 +1,9 @@
+#include "Stdafx.h"
 #include <sndfile.hh>
 #include <cstdio>
 #include <iostream>
 #include <math.h>
-#include <fftw3.h>
+#include "fftw3.h"
 #include "track.h"
 #include "functions.h"
 

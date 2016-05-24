@@ -5,7 +5,7 @@
 //  Created by Mohammadreza Rezaei on 4/29/16.
 //  Copyright (c) 2016 Mohammadreza Rezaei. All rights reserved.
 //
-
+#include "Stdafx.h"
 #include <iostream>
 #include <fstream>
 #include <cstdio>
