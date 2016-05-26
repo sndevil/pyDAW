@@ -16,8 +16,7 @@
 
 using std::cout;
 
-#define BufferSIZE 4096
-#define Maxfiles 10
+
 
 mixer::mixer()
 {
@@ -34,6 +33,14 @@ void mixer::AddTrack(char* filename,sf_count_t position)
 {
     tracks[trackcount].init(filename);
     tracks[trackcount].PositionInLine=position;
+	//cout<<"initing EQ\n";
+	//EQ* eq = new EQ();
+	//cout<<"EQ Constructor called\n";
+	//double eqbands[6] = {500,500,-1,2000,1000,-1};
+	//eq->SaveBands(eqbands,2,tracks[trackcount].SampleRate,BufferSIZE/4+1);
+	//cout<<"EQ band saved\n";
+	//tracks[trackcount].AddFreqEffect(eq, EQEffect);
+	//cout<<"EQ Added\n";
     sf_count_t end = position+tracks[trackcount].GetTotalFrames();
     if (Totalframes < end)
         Totalframes = end;
@@ -52,7 +59,7 @@ void mixer::Readbuffer()
         buffer[i+1] = 0;
         for (int j = 0; j < trackcount;j++)
         {
-            int mul = (tracks[j].channels ==1)?2:1;
+            int mul = (tracks[j].channels ==1)?2:2;
             if (pos > tracks[j].GetTotalFrames()*mul + tracks[j].PositionInLine || pos < tracks[j].PositionInLine)
             {
                 //cout<<"Ended\n";

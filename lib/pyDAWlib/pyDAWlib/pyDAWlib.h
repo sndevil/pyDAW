@@ -15,7 +15,7 @@
 using namespace System;
 
 typedef void* Mixer;
-
+typedef void* Effect;
 typedef void* Outfile;
 
 PYDAWLIB Mixer NewMixer();
@@ -31,6 +31,10 @@ PYDAWLIB Outfile CreateOutfile(const wchar_t* path,int bps, int channels, int Sa
 PYDAWLIB void WriteOutfile(Outfile f,Mixer m, long position);
 
 PYDAWLIB void CloseOutfile(Outfile f);
+
+PYDAWLIB void AddEQ(Mixer m, int trackindex, double* bands, int bandcount);
+
+PYDAWLIB void AddHighpass(Mixer m, int trackindex, int freq, int gain, int bw);
 
 PYDAWLIB int test(int a);
 

@@ -84,7 +84,10 @@ void WriteOutfile(Outfile f,Mixer m, long position)
 	mixer* mix = reinterpret_cast<mixer*>(m);
 	outfile* file = reinterpret_cast<outfile*>(f);
 	double* read;
+	//std::cout<<"calling getsample()\n";
 	read = mix->Getsample((sf_count_t)position);
+	//long length = mix->GetTotalFrames();
+	//if (position > length)
 	//std::cout<<"read "<<position<<" buffer: "<<read[0]<<" , " << read[1]<<"\n";
 	file->write(read,1);
 	//std::cout<<"wrote " << position<<"\n";
@@ -96,4 +99,29 @@ void CloseOutfile(Outfile f)
 {
 	outfile* file = reinterpret_cast<outfile*>(f);
 	file->close();
+}
+
+void AddEQ(Mixer m, int trackindex, double* bands, int bandcount)
+{
+	//std::cout<<"Add EQ called count: "<< bandcount <<"\n";
+	mixer* mix = reinterpret_cast<mixer*>(m);
+	EQ* eq = new EQ();
+	//for (int i = 0 ; i < bandcount*3;i++)
+	//	std::cout<<i<<" : "<<bands[i]<<"\n";
+	eq->SaveBands(bands,bandcount,mix->tracks[trackindex].SampleRate,BufferSIZE/4+1);
+	//std::cout<<"EQ saved\n";
+	mix->tracks[trackindex].AddFreqEffect(eq, EQEffect);
+	//std::cout<<"EQ added to track"<<trackindex<<"\n";
+}
+
+void AddHighpass(Mixer m, int trackindex, int freq, int gain, int bw)
+{
+	std::cout<<"Add HP called\n";
+	mixer* mix = reinterpret_cast<mixer*>(m);
+	Highpass* hp = new Highpass();
+	std::cout<<"HP constructor called\n";
+	hp->SaveBand(freq,bw,gain,mix->tracks[trackindex].SampleRate,BufferSIZE/4+1);
+	std::cout<<"HP band saved\n";
+	mix->tracks[trackindex].AddFreqEffect(hp, HIGHPASSEffect);
+	std::cout<<"HP Added to track\n";
 }

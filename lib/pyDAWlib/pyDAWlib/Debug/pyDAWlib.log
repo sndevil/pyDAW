@@ -1,37 +1,22 @@
-﻿Build started 5/24/2016 5:52:09 PM.
-     1>Project "c:\Documents and Settings\Mobarezi\My Documents\Visual Studio 2010\Projects\pyDAWlib\pyDAWlib\pyDAWlib.vcxproj" on node 2 (build target(s)).
+﻿Build started 5/26/2016 2:40:38 PM.
+     1>Project "C:\Documents and Settings\Mobarezi\my documents\visual studio 2010\Projects\pyDAWlib\pyDAWlib\pyDAWlib.vcxproj" on node 2 (build target(s)).
      1>InitializeBuildStatus:
          Creating "Debug\pyDAWlib.unsuccessfulbuild" because "AlwaysCreate" was specified.
        GenerateTargetFrameworkMonikerAttribute:
        Skipping target "GenerateTargetFrameworkMonikerAttribute" because all output files are up-to-date with respect to the input files.
        ClCompile:
          All outputs are up-to-date.
-         C:\Program Files\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /AI"C:\Program Files\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0" /Zi /clr /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _WINDLL /D _UNICODE /D UNICODE /EHa /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"StdAfx.h" /Fp"Debug\pyDAWlib.pch" /Fo"Debug\\" /Fd"Debug\vc100.pdb" /TP /FU"C:\Program Files\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0\System.Core.dll" /FU"C:\Program Files\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0\System.Data.dll" /FU"C:\Program Files\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0\System.dll" /FU"C:\Program Files\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0\System.Xml.dll" /analyze- /errorReport:prompt outfile.cc pyDAWlib.cpp /clr:nostdlib 
-         outfile.cc
-         pyDAWlib.cpp
-     1>pyDAWlib.cpp(11): warning C4273: 'test' : inconsistent dll linkage
-                 c:\documents and settings\mobarezi\my documents\visual studio 2010\projects\pydawlib\pydawlib\pyDAWlib.h(35) : see previous definition of 'test'
-     1>pyDAWlib.cpp(16): warning C4273: 'NewMixer' : inconsistent dll linkage
-                 c:\documents and settings\mobarezi\my documents\visual studio 2010\projects\pydawlib\pydawlib\pyDAWlib.h(21) : see previous definition of 'NewMixer'
-     1>pyDAWlib.cpp(21): warning C4273: 'AddTrack' : inconsistent dll linkage
-                 c:\documents and settings\mobarezi\my documents\visual studio 2010\projects\pydawlib\pydawlib\pyDAWlib.h(23) : see previous definition of 'AddTrack'
-     1>pyDAWlib.cpp(36): warning C4273: 'GetSample' : inconsistent dll linkage
-                 c:\documents and settings\mobarezi\my documents\visual studio 2010\projects\pydawlib\pydawlib\pyDAWlib.h(25) : see previous definition of 'GetSample'
-     1>pyDAWlib.cpp(45): warning C4273: 'GetLength' : inconsistent dll linkage
-                 c:\documents and settings\mobarezi\my documents\visual studio 2010\projects\pydawlib\pydawlib\pyDAWlib.h(27) : see previous definition of 'GetLength'
-     1>pyDAWlib.cpp(52): warning C4273: 'CreateOutfile' : inconsistent dll linkage
-                 c:\documents and settings\mobarezi\my documents\visual studio 2010\projects\pydawlib\pydawlib\pyDAWlib.h(29) : see previous definition of 'CreateOutfile'
-     1>pyDAWlib.cpp(83): warning C4273: 'WriteOutfile' : inconsistent dll linkage
-                 c:\documents and settings\mobarezi\my documents\visual studio 2010\projects\pydawlib\pydawlib\pyDAWlib.h(31) : see previous definition of 'WriteOutfile'
-     1>pyDAWlib.cpp(96): warning C4273: 'CloseOutfile' : inconsistent dll linkage
-                 c:\documents and settings\mobarezi\my documents\visual studio 2010\projects\pydawlib\pydawlib\pyDAWlib.h(33) : see previous definition of 'CloseOutfile'
-         Generating Code...
+         C:\Program Files\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /AI"C:\Program Files\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0" /Zi /clr /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _WINDLL /D _UNICODE /D UNICODE /EHa /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"StdAfx.h" /Fp"Debug\pyDAWlib.pch" /Fo"Debug\\" /Fd"Debug\vc100.pdb" /TP /FU"C:\Program Files\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0\System.Core.dll" /FU"C:\Program Files\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0\System.Data.dll" /FU"C:\Program Files\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0\System.dll" /FU"C:\Program Files\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0\System.Xml.dll" /analyze- /errorReport:prompt track.cc /clr:nostdlib 
+         track.cc
+     1>track.cc(82): warning C4101: 'buffer2' : unreferenced local variable
+     1>track.cc(302): warning C4101: 'temp' : unreferenced local variable
          All outputs are up-to-date.
        ResourceCompile:
          All outputs are up-to-date.
        Link:
-         C:\Program Files\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"c:\Documents and Settings\Mobarezi\My Documents\Visual Studio 2010\Projects\pyDAWlib\Debug\pyDAWlib.dll" /INCREMENTAL /NOLOGO "libfftw3-3.lib" "libfftw3f-3.lib" "libfftw3l-3.lib" "C:\Program Files\Mega-Nerd\libsndfile\lib\libsndfile-1.lib" kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /ManifestFile:"Debug\pyDAWlib.dll.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"c:\Documents and Settings\Mobarezi\My Documents\Visual Studio 2010\Projects\pyDAWlib\Debug\pyDAWlib.pdb" /ASSEMBLYDEBUG /TLBID:1 /DYNAMICBASE /FIXED:NO /NXCOMPAT /MACHINE:X86 /DLL Debug\app.res
+         C:\Program Files\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Documents and Settings\Mobarezi\my documents\visual studio 2010\Projects\pyDAWlib\Debug\pyDAWlib.dll" /INCREMENTAL /NOLOGO "libfftw3-3.lib" "libfftw3f-3.lib" "libfftw3l-3.lib" "C:\Program Files\Mega-Nerd\libsndfile\lib\libsndfile-1.lib" kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /ManifestFile:"Debug\pyDAWlib.dll.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"C:\Documents and Settings\Mobarezi\my documents\visual studio 2010\Projects\pyDAWlib\Debug\pyDAWlib.pdb" /ASSEMBLYDEBUG /TLBID:1 /DYNAMICBASE /FIXED:NO /NXCOMPAT /MACHINE:X86 /DLL Debug\app.res
          Debug\AssemblyInfo.obj
+         Debug\effect.obj
          Debug\functions.obj
          Debug\mixer.obj
          Debug\outfile.obj
@@ -39,19 +24,19 @@
          Debug\Stdafx.obj
          Debug\track.obj
          "Debug\.NETFramework,Version=v4.0.AssemblyAttributes.obj"
-            Creating library c:\Documents and Settings\Mobarezi\My Documents\Visual Studio 2010\Projects\pyDAWlib\Debug\pyDAWlib.lib and object c:\Documents and Settings\Mobarezi\My Documents\Visual Studio 2010\Projects\pyDAWlib\Debug\pyDAWlib.exp
+            Creating library C:\Documents and Settings\Mobarezi\my documents\visual studio 2010\Projects\pyDAWlib\Debug\pyDAWlib.lib and object C:\Documents and Settings\Mobarezi\my documents\visual studio 2010\Projects\pyDAWlib\Debug\pyDAWlib.exp
      1>track.obj : warning LNK4248: unresolved typeref token (0100001D) for 'SNDFILE_tag'; image may not run
      1>outfile.obj : warning LNK4248: unresolved typeref token (0100001C) for 'SNDFILE_tag'; image may not run
      1>mixer.obj : warning LNK4248: unresolved typeref token (0100001C) for 'SNDFILE_tag'; image may not run
      1>track.obj : warning LNK4248: unresolved typeref token (0100001C) for 'fftw_plan_s'; image may not run
-         pyDAWlib.vcxproj -> c:\Documents and Settings\Mobarezi\My Documents\Visual Studio 2010\Projects\pyDAWlib\Debug\pyDAWlib.dll
+         pyDAWlib.vcxproj -> C:\Documents and Settings\Mobarezi\my documents\visual studio 2010\Projects\pyDAWlib\Debug\pyDAWlib.dll
        Manifest:
-         C:\Program Files\Microsoft SDKs\Windows\v7.0A\bin\mt.exe /nologo /verbose /outputresource:"c:\Documents and Settings\Mobarezi\My Documents\Visual Studio 2010\Projects\pyDAWlib\Debug\pyDAWlib.dll;#2" /manifest Debug\pyDAWlib.dll.intermediate.manifest
+         C:\Program Files\Microsoft SDKs\Windows\v7.0A\bin\mt.exe /nologo /verbose /outputresource:"C:\Documents and Settings\Mobarezi\my documents\visual studio 2010\Projects\pyDAWlib\Debug\pyDAWlib.dll;#2" /manifest Debug\pyDAWlib.dll.intermediate.manifest
        FinalizeBuildStatus:
          Deleting file "Debug\pyDAWlib.unsuccessfulbuild".
          Touching "Debug\pyDAWlib.lastbuildstate".
-     1>Done Building Project "c:\Documents and Settings\Mobarezi\My Documents\Visual Studio 2010\Projects\pyDAWlib\pyDAWlib\pyDAWlib.vcxproj" (build target(s)).
+     1>Done Building Project "C:\Documents and Settings\Mobarezi\my documents\visual studio 2010\Projects\pyDAWlib\pyDAWlib\pyDAWlib.vcxproj" (build target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:02.42
+Time Elapsed 00:00:02.35

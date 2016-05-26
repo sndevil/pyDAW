@@ -54,6 +54,10 @@ void track::init(char* filename)
 	this->volume = 1;
     file.seek(0,SF_SEEK_SET);
     this->buffer = new double[BufferSIZE];
+	timeeffects = new effect*[10];
+	freqeffects = new effect*[10];
+	this->freqeffectscount = 0;
+	this->SampleRate = file.samplerate();
     //cout<<"Reading buffer\n";
     Readbuffer();
 }
@@ -107,16 +111,25 @@ void track::Process()
     fftw_plan p1,p2,pi1,pi2;
     
     out1 = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * (BufferSIZE/channels/2+1));
-            out2 = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * (BufferSIZE/channels/2+1));
-            p2 = fftw_plan_dft_r2c_1d(BufferSIZE/channels, in2, out2,FFTW_ESTIMATE);
-            pi2 = fftw_plan_dft_c2r_1d(BufferSIZE/channels, out2, outr2,FFTW_ESTIMATE);
-            fftw_execute(p2);
+    out2 = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * (BufferSIZE/channels/2+1));
+    p2 = fftw_plan_dft_r2c_1d(BufferSIZE/channels, in2, out2,FFTW_ESTIMATE);
+    pi2 = fftw_plan_dft_c2r_1d(BufferSIZE/channels, out2, outr2,FFTW_ESTIMATE);
+    fftw_execute(p2);
     
     p1 = fftw_plan_dft_r2c_1d(BufferSIZE/channels, in1, out1,FFTW_ESTIMATE);
     pi1 = fftw_plan_dft_c2r_1d(BufferSIZE/channels, out1, outr1,FFTW_ESTIMATE);
     fftw_execute(p1);
     
-    double eqbands[6] = {200,100,-1,2000,1000,1};
+	//cout<<"Going to call effects. Count: "<< freqeffectscount << "\n";
+
+	for (int i = 0; i < freqeffectscount;i++)
+	{
+		freqeffects[i]->Process(out1,BufferSIZE/channels/2+1);
+		freqeffects[i]->Process(out2,BufferSIZE/channels/2+1);
+	}
+
+	//cout<<"Effect call finished\n";
+    //double eqbands[6] = {200,100,-1,2000,1000,1};
     //equaliser(eqbands,2,samplerate,out1,BufferSIZE/4+1);
     //equaliser(eqbands,2,samplerate,out2,BufferSIZE/4+1);
     //Highpass(1000, 1,500,samplerate,out1,BufferSIZE/channels/2+1);
@@ -131,22 +144,26 @@ void track::Process()
 
     fftw_execute(pi1);
     fftw_execute(pi2);
-    
+
+	//cout<<"iFFT\n";
+
     for (int i = 0;i < BufferSIZE/channels;i+=channels)
     {
         buffer[i*channels] = outr1[i]/(double)BufferSIZE * channels;
         buffer[i*channels+1] = outr2[i]/(double)BufferSIZE*channels;
     }
-    
+	//cout<<"1\n";
     fftw_destroy_plan(p1); fftw_destroy_plan(pi1);
+	//cout<<"2\n";
     fftw_free(in1); fftw_free(out1);
-        fftw_destroy_plan(p2);
-        fftw_free(out2);
-        fftw_free(in2);
-        fftw_destroy_plan(pi2);
+	//cout<<"3\n";
+    fftw_destroy_plan(p2);
+	//cout<<"4\n";
+    fftw_free(out2);
+    fftw_free(in2);
+    fftw_destroy_plan(pi2);
     
-    
-    Limiter(1, 0.7,buffer, BufferSIZE);
+    //Limiter(1, 0.7,buffer, BufferSIZE);
     //fft_stereo(buffer, fftr,ffti, BufferSIZE);
     //for (int i = 0; i < BufferSIZE;i++)
     //{
@@ -191,7 +208,7 @@ void track::Process_Mono()
     pi1 = fftw_plan_dft_c2r_1d(BufferSIZE/channels, out1, outr1,FFTW_ESTIMATE);
     fftw_execute(p1);
     
-    double eqbands[6] = {200,100,-1,2000,1000,1};
+    //double eqbands[6] = {200,100,-1,2000,1000,1};
     //equaliser(eqbands,2,samplerate,out1,BufferSIZE/4+1);
     //equaliser(eqbands,2,samplerate,out2,BufferSIZE/4+1);
     //Highpass(1000, 1,500,samplerate,out1,BufferSIZE/channels/2+1);
@@ -278,4 +295,31 @@ void track::Readbuffer()
     //cout<<"read:"<< read<<" Frameoffset: " <<FrameOffset<<" Processing\n";
     FrameOffset += read;
     //cout<<"Frameoffset: " <<FrameOffset<<"\n";
+}
+
+void track::AddFreqEffect(effect* e, EffectType t)
+{
+	effect* temp;
+
+	//cout<<"Trying to add effect\n";
+	switch (t)
+	{
+	case EQEffect:
+		//temp = new EQ((EQ*)e,BufferSIZE/channels/2 + 1);
+		freqeffects[freqeffectscount] = new EQ((EQ*)e,BufferSIZE/channels/2 + 1);//->init(temp);
+		freqeffectscount++;
+
+		break;
+	case HIGHPASSEffect:
+		//temp = new Highpass((Highpass*)e,BufferSIZE/channels/2 +1);
+		freqeffects[freqeffectscount]= new Highpass((Highpass*)e,BufferSIZE/channels/2 +1);//->init(temp);
+		freqeffectscount++;
+		break;
+	}
+	//cout<<"effect Added\n";
+	if (channels > 1)
+        Process();
+    else
+        Process_Mono();
+	//cout<<"Proccessed\n";
 }

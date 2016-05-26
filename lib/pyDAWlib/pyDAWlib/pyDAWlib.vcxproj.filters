@@ -39,6 +39,9 @@
     <ClInclude Include="outfile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="effect.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pyDAWlib.cpp">
@@ -60,6 +63,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="outfile.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="effect.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

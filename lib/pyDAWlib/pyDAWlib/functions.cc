@@ -232,7 +232,7 @@ void equaliser(double* bands,int bandcount,int SampleRate,fftw_complex* buffer,c
 //static int ftempHP=0,gtempHP=0,bwtempHP=0;
 static bool HPSaved = false;
 static double* tempfilterHP;
-void Highpass(int freq, int gain,int bw,int SampleRate,fftw_complex* buffer,const int size)
+/*void Highpass(int freq, int gain,int bw,int SampleRate,fftw_complex* buffer,const int size)
 {
     //const int S = size/2;
     static int ftemp,gtemp,bwtemp;
@@ -274,7 +274,7 @@ void Highpass(int freq, int gain,int bw,int SampleRate,fftw_complex* buffer,cons
     //for (int i = 0; i <size;i++)
     //    std::cout<<i<<":"<<inputi[i]<<"\n";
     //std::cout<<"for escaped\n";
-}
+}*/
 
 void Lowpass(int freq, int gain,int bw,int SampleRate,double* inputr, double* inputi,const int size)
 {

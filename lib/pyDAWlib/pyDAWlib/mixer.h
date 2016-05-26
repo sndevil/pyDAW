@@ -2,6 +2,9 @@
 #include "track.h"
 #include <cstdio>
 
+#define BufferSIZE 4096
+#define Maxfiles 10
+
 class mixer
 {
 public:
