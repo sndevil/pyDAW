@@ -18,6 +18,7 @@ typedef void* Mixer;
 typedef void* Effect;
 typedef void* Outfile;
 
+
 PYDAWLIB Mixer NewMixer();
 
 PYDAWLIB void AddTrack(Mixer m,const wchar_t* path, long position);
@@ -38,4 +39,4 @@ PYDAWLIB void AddHighpass(Mixer m, int trackindex, int freq, int gain, int bw);
 
 PYDAWLIB int test(int a);
 
-
+PYDAWLIB void AddDelay(Mixer m, int trackindex, int cyclems, double feedback, double gain);

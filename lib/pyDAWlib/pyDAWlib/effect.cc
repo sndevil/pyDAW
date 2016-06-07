@@ -15,6 +15,10 @@ void effect::Process(fftw_complex* buffer,const int size)
 {
 }
 
+void effect::Process(double* buffer, const int size)
+{
+}
+
 void EQ::init(EQ* eff)
 {
 	EQSaved = eff->EQSaved;
@@ -168,4 +172,113 @@ void Highpass::SaveBand(int freq,int bw ,int gain,int SampleRate,const int size)
         tempfilter[size] = 1;
         HPSaved = true;
     }
+}
+
+delay::delay()
+{
+}
+
+delay::delay(delay* tocopy)
+{
+	filtersize = tocopy->filtersize;
+	filter = new double[filtersize];
+	soundmemo = new double[filtersize * 4];
+
+	readindex = 0;
+	writeindex = 0;
+	readindex1 = 0;
+	readindex2 = 0;
+	firsttime = true;
+
+
+	firstgain = tocopy->firstgain;
+	secondgain = tocopy->firstgain;
+	thirdgain = tocopy->thirdgain;
+
+	for (int i = 0; i < filtersize; i++)
+		filter[i] = tocopy->filter[i];
+}
+
+delay::delay(double freq, int Samplerate, int channels,double feedback,double gain)
+{
+	filtersize = (int)((1/freq)*Samplerate)*channels;
+	filter = new double[filtersize];
+	soundmemo = new double[filtersize * 4];
+	readindex = 0;
+	writeindex = 0;
+	readindex1 = 0;
+	readindex2 = 0;
+	firsttime = true;
+
+	firstgain = gain;
+	secondgain = firstgain * feedback;
+	thirdgain = secondgain * feedback;
+
+	for (int i = 0 ; i < filtersize; i++)
+		filter[i] = 1;
+
+}
+
+delay::delay(int cyclems, int Samplerate, int channels,double feedback,double gain)
+{
+	filtersize = (int)((double)cyclems/1000*Samplerate)*channels;
+	filter = new double[filtersize];
+	soundmemo = new double[filtersize * 4];
+	readindex =0 ;
+	writeindex = 0;
+	readindex1 = 0;
+	readindex2 = 0;
+	firsttime = true;
+	
+	firstgain = gain;
+	secondgain = firstgain * feedback;
+	thirdgain = secondgain * feedback;
+
+	for (int i = 0; i < filtersize;i++)
+		filter[i] = 1;
+}
+
+void delay::init()
+{
+}
+
+void delay::Process(double* buffer, const int size)
+{
+	double f1=0,f2=0,f3=0;
+	for (int i = 0; i < size; i++)
+	{
+		soundmemo[writeindex++] = buffer[i];
+		if (writeindex >= 4*filtersize)
+		{
+			writeindex = 0;
+			firsttime = false;
+		}
+
+		if (firsttime)
+		{
+			f1 = (writeindex > filtersize)? soundmemo[readindex] : 0;
+			f2 = (writeindex > 2*filtersize) ? soundmemo[readindex - filtersize] : 0;
+			f3 = (writeindex > 3*filtersize) ? soundmemo[readindex - 2*filtersize] : 0;
+
+			if (writeindex >= filtersize)
+				readindex++;
+
+			if (readindex >= 4*filtersize)
+			{
+				readindex = 0;
+				firsttime = false;
+			}
+		}
+		else
+		{
+			f1 = soundmemo[readindex];
+			f2 = (readindex > filtersize) ? soundmemo[readindex - filtersize] : soundmemo[readindex + 3*filtersize];
+			f3 = (readindex > 2 * filtersize) ? soundmemo[readindex - 2 * filtersize] : soundmemo[readindex + 2*filtersize];
+
+			if (++readindex >= 4*filtersize)
+				readindex = 0;
+		}
+
+		buffer[i] += (f1 * firstgain + f2* secondgain + f3 *thirdgain) * filter[readindex % size];
+	}
 }

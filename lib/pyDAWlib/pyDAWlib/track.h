@@ -35,5 +35,6 @@ private:
     effect** timeeffects;
 	effect** freqeffects;
 	int freqeffectscount;
+	int timeeffectscount;
     
 };

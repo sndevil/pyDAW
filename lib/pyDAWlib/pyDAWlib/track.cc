@@ -57,6 +57,7 @@ void track::init(char* filename)
 	timeeffects = new effect*[10];
 	freqeffects = new effect*[10];
 	this->freqeffectscount = 0;
+	timeeffectscount = 0;
 	this->SampleRate = file.samplerate();
     //cout<<"Reading buffer\n";
     Readbuffer();
@@ -163,6 +164,11 @@ void track::Process()
     fftw_free(in2);
     fftw_destroy_plan(pi2);
     
+
+	for (int i = 0; i < timeeffectscount;i++)
+		timeeffects[i]->Process(buffer,BufferSIZE);
+
+
     //Limiter(1, 0.7,buffer, BufferSIZE);
     //fft_stereo(buffer, fftr,ffti, BufferSIZE);
     //for (int i = 0; i < BufferSIZE;i++)
@@ -299,7 +305,6 @@ void track::Readbuffer()
 
 void track::AddFreqEffect(effect* e, EffectType t)
 {
-	effect* temp;
 
 	//cout<<"Trying to add effect\n";
 	switch (t)
@@ -322,4 +327,20 @@ void track::AddFreqEffect(effect* e, EffectType t)
     else
         Process_Mono();
 	//cout<<"Proccessed\n";
+}
+
+void track::AddTimeEffect(effect* e, EffectType t)
+{
+	switch(t)
+	{
+	case DELAYEffect:
+		timeeffects[timeeffectscount] = new delay((delay*)e);
+		timeeffectscount++;
+		break;
+	}
+
+	if (channels > 1)
+		Process();
+	else
+		Process_Mono();
 }

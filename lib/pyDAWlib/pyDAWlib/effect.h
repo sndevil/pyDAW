@@ -5,7 +5,8 @@ enum EffectType
 	EQEffect,
 	HIGHPASSEffect,
 	LOWPASSEffect,
-	LIMITEREffect
+	LIMITEREffect,
+	DELAYEffect
 };
 
 class effect
@@ -13,6 +14,7 @@ class effect
 public:
 	effect();
 	virtual void Process(fftw_complex* buffer,const int size);
+	virtual void Process(double* buffer, const int size);
 	virtual void init(effect* eff);
 	//virtual void init(Highpass* eff);
 };
@@ -44,4 +46,36 @@ public:
 	int ftemp,gtemp,bwtemp;
     bool HPSaved;
     double* tempfilter;
+};
+
+
+
+class delay : public effect
+{
+public:
+	delay();
+	delay(delay* tocopy);
+	delay(double freq,int Samplerate, int channels, double feedback, double gain);
+	delay(int cyclems,int Samplerate, int channels, double feedback, double gain);
+	void init();
+	virtual void Process(double* buffer, const int size);
+
+	double* soundmemo;
+	double* filter;
+
+	int writeindex;
+	int readindex;
+	int readindex1;
+	int readindex2;
+
+	int filtersize;
+	int timecounter;
+	double firstgain;
+	double secondgain;
+	double thirdgain;
+
+	bool firsttime;
+
+private:
+
 };

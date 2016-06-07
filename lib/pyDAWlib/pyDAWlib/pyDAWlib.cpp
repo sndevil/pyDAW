@@ -116,12 +116,20 @@ void AddEQ(Mixer m, int trackindex, double* bands, int bandcount)
 
 void AddHighpass(Mixer m, int trackindex, int freq, int gain, int bw)
 {
-	std::cout<<"Add HP called\n";
+	//std::cout<<"Add HP called\n";
 	mixer* mix = reinterpret_cast<mixer*>(m);
 	Highpass* hp = new Highpass();
-	std::cout<<"HP constructor called\n";
+	//std::cout<<"HP constructor called\n";
 	hp->SaveBand(freq,bw,gain,mix->tracks[trackindex].SampleRate,BufferSIZE/4+1);
-	std::cout<<"HP band saved\n";
+	//std::cout<<"HP band saved\n";
 	mix->tracks[trackindex].AddFreqEffect(hp, HIGHPASSEffect);
-	std::cout<<"HP Added to track\n";
+	//std::cout<<"HP Added to track\n";
+}
+
+void AddDelay(Mixer m, int trackindex, int cyclems, double feedback, double gain)
+{
+	mixer* mix = reinterpret_cast<mixer*>(m);
+	delay* del = new delay(cyclems, mix->tracks[trackindex].SampleRate
+							,mix->tracks[trackindex].channels,feedback, gain);
+	mix->tracks[trackindex].AddTimeEffect(del, DELAYEffect);
 }
