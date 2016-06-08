@@ -306,27 +306,22 @@ void track::Readbuffer()
 void track::AddFreqEffect(effect* e, EffectType t)
 {
 
-	//cout<<"Trying to add effect\n";
 	switch (t)
 	{
 	case EQEffect:
-		//temp = new EQ((EQ*)e,BufferSIZE/channels/2 + 1);
 		freqeffects[freqeffectscount] = new EQ((EQ*)e,BufferSIZE/channels/2 + 1);//->init(temp);
 		freqeffectscount++;
 
 		break;
 	case HIGHPASSEffect:
-		//temp = new Highpass((Highpass*)e,BufferSIZE/channels/2 +1);
 		freqeffects[freqeffectscount]= new Highpass((Highpass*)e,BufferSIZE/channels/2 +1);//->init(temp);
 		freqeffectscount++;
 		break;
 	}
-	//cout<<"effect Added\n";
 	if (channels > 1)
         Process();
     else
         Process_Mono();
-	//cout<<"Proccessed\n";
 }
 
 void track::AddTimeEffect(effect* e, EffectType t)
@@ -337,6 +332,9 @@ void track::AddTimeEffect(effect* e, EffectType t)
 		timeeffects[timeeffectscount] = new delay((delay*)e);
 		timeeffectscount++;
 		break;
+	case REVERBEffect:
+		timeeffects[timeeffectscount] = new reverb((reverb*)e);
+		timeeffectscount++;
 	}
 
 	if (channels > 1)

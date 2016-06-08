@@ -232,49 +232,6 @@ void equaliser(double* bands,int bandcount,int SampleRate,fftw_complex* buffer,c
 //static int ftempHP=0,gtempHP=0,bwtempHP=0;
 static bool HPSaved = false;
 static double* tempfilterHP;
-/*void Highpass(int freq, int gain,int bw,int SampleRate,fftw_complex* buffer,const int size)
-{
-    //const int S = size/2;
-    static int ftemp,gtemp,bwtemp;
-    static bool HPSaved;
-    static double* tempfilter;
-    if (freq!=ftemp || gain!=gtemp || bwtemp!=bw)
-        HPSaved = false;
-    if (!HPSaved)
-    {
-        //double filter[S];
-        //double alpha = bw;
-        bwtemp = bw;
-        gtemp = gain;
-        ftemp = freq;
-        double deltaf = SampleRate / size / 2;
-        tempfilter = new double[size+1];
-        for (int i = 1 ; i <= size; i ++)
-        {
-            double tempval;
-            if (i*deltaf < freq - 2*bw)
-                tempval = 0;
-            else
-                tempval = gain * (3.4142 - exp(-((i * deltaf)-ftemp) / bwtemp))/3.4142;
-        
-            if (tempval < 0)
-                tempval = 0;
-            tempfilter[i-1] = tempval;
-        }
-        tempfilter[size] = tempfilter[size-1];
-        HPSaved = true;
-    }
-
-    for (int i = 0; i <= size; i++)
-    {
-        //std::cout<<i<<" : "<<tempfilter[i]<<"\n";
-        buffer[i][0] *= tempfilter[i];
-        buffer[i][1] *= tempfilter[i];
-    }
-    //for (int i = 0; i <size;i++)
-    //    std::cout<<i<<":"<<inputi[i]<<"\n";
-    //std::cout<<"for escaped\n";
-}*/
 
 void Lowpass(int freq, int gain,int bw,int SampleRate,double* inputr, double* inputi,const int size)
 {

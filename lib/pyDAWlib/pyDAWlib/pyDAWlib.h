@@ -40,3 +40,5 @@ PYDAWLIB void AddHighpass(Mixer m, int trackindex, int freq, int gain, int bw);
 PYDAWLIB int test(int a);
 
 PYDAWLIB void AddDelay(Mixer m, int trackindex, int cyclems, double feedback, double gain);
+
+PYDAWLIB void AddReverb(Mixer m, int trackindex, int cyclems,double gain);

@@ -6,7 +6,8 @@ enum EffectType
 	HIGHPASSEffect,
 	LOWPASSEffect,
 	LIMITEREffect,
-	DELAYEffect
+	DELAYEffect,
+	REVERBEffect
 };
 
 class effect
@@ -57,7 +58,7 @@ public:
 	delay(delay* tocopy);
 	delay(double freq,int Samplerate, int channels, double feedback, double gain);
 	delay(int cyclems,int Samplerate, int channels, double feedback, double gain);
-	void init();
+	//void init();
 	virtual void Process(double* buffer, const int size);
 
 	double* soundmemo;
@@ -78,4 +79,25 @@ public:
 
 private:
 
+};
+
+
+class reverb : public effect
+{
+public:
+	reverb();
+	reverb(reverb* tocopy);	
+	reverb(int cyclems,int Samplerate, int channels, double gain);
+
+	virtual void Process(double* buffer, const int size);
+
+	double* soundmemo;
+	double* filter;
+
+	int memosize;
+	int filtersize;
+	int readindex;
+	int writeindex;
+	double gain;
+	int channels;
 };

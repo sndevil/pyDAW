@@ -133,3 +133,11 @@ void AddDelay(Mixer m, int trackindex, int cyclems, double feedback, double gain
 							,mix->tracks[trackindex].channels,feedback, gain);
 	mix->tracks[trackindex].AddTimeEffect(del, DELAYEffect);
 }
+
+void AddReverb(Mixer m, int trackindex, int cyclems,double gain)
+{
+	mixer* mix = reinterpret_cast<mixer*>(m);
+	reverb* rev = new reverb(cyclems, mix->tracks[trackindex].SampleRate
+							,mix->tracks[trackindex].channels, gain);
+	mix->tracks[trackindex].AddTimeEffect(rev, REVERBEffect);
+}

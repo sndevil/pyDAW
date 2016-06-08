@@ -150,8 +150,6 @@ void Highpass::SaveBand(int freq,int bw ,int gain,int SampleRate,const int size)
         HPSaved = false;
     if (!HPSaved)
     {
-        //double filter[S];
-        //double alpha = bw;
         bwtemp = bw;
         gtemp = gain;
         ftemp = freq;
@@ -238,10 +236,6 @@ delay::delay(int cyclems, int Samplerate, int channels,double feedback,double ga
 		filter[i] = 1;
 }
 
-void delay::init()
-{
-}
-
 void delay::Process(double* buffer, const int size)
 {
 	double f1=0,f2=0,f3=0;
@@ -281,4 +275,98 @@ void delay::Process(double* buffer, const int size)
 
 		buffer[i] += (f1 * firstgain + f2* secondgain + f3 *thirdgain) * filter[readindex % size];
 	}
+}
+
+reverb::reverb()
+{
+}
+
+reverb::reverb(reverb* tocopy)
+{
+	filtersize = tocopy->filtersize;
+	readindex = tocopy->readindex;
+	writeindex = tocopy->writeindex;
+	gain = tocopy->gain;
+	channels = tocopy->channels;
+
+	memosize = filtersize / channels;
+	filter = new double[filtersize];
+	soundmemo = new double[filtersize];
+
+	for (int i = 0 ; i < filtersize;i++)
+		filter[i] = tocopy->filter[i];
+	for (int i = 0; i< memosize; i++)
+		soundmemo[i] = tocopy->soundmemo[i];
+}
+
+reverb::reverb(int cyclems, int Samplerate, int channels, double gain)
+{
+	readindex = 0;
+	writeindex = 0;
+	this->channels = channels;
+	this->gain = gain;
+	filtersize = (int)(((double)cyclems/1000) * Samplerate) * channels / 10;
+	memosize = filtersize / channels;
+	filter = new double[filtersize];
+	soundmemo = new double[memosize];
+	for (int i = 0 ; i < filtersize; i++)
+		filter[i] = 1;//- ((double)i/filtersize);
+	for (int i = 0 ; i < memosize ; i++)
+		soundmemo[i] = 0;
+}
+
+void reverb::Process(double* buffer, const int size)
+{
+	double toadd = 0;
+	int idx = 0,count=0;
+	int tmpread = 0;
+	double max =0,min = 0;
+	//std::cout<<"Process Entered\n";
+	for (int i = 0; i < size; i++)
+	{
+		//std::cout<<"Main loop Entered\n";
+		soundmemo[writeindex] += buffer[i]/10;
+
+		if (i % 10 == 9)
+		{
+			
+			toadd = 0;
+			count = 0;
+			for (int j = 0; j < filtersize; j++)
+			{
+				idx = writeindex - (j/2);
+				idx = (idx >=0) ? idx : memosize+idx;
+				toadd += soundmemo[idx] * filter[j];
+				if (soundmemo[idx] > 50 || soundmemo[idx] < -50)
+				{
+					std::cout<<"Toadd: " << toadd<<"\n";
+					std::cout<<"Filter["<<j<<"] : " << filter[j]<<"\n";
+					std::cout<<"Memo["<<idx<<"] : " << soundmemo[idx]<<"\n";
+					std::cout<<"Memosize: "<<memosize << "  filtersize: " << filtersize<<"\n";
+				}
+				count++;
+			}
+
+			if (count != 0)
+				toadd *= gain / count;
+			else
+				toadd *= gain;
+
+			if (toadd > max)
+				max = toadd;
+			if (min>toadd)
+				min = toadd;
+
+			for (int j = 0; j < 10;j++)
+				buffer[i-j] += toadd;
+			
+			if (++writeindex >= memosize)
+				writeindex = 0;
+
+		}
+	}
+	//std::cout<<"Countmax: " << countmax<<"\n";
+	//std::cout<<"Countmin: " << countmin<<"\n";
+	std::cout<<"max: " << max <<"\n";
+	std::cout<<"min: " << min << "\n";
 }
