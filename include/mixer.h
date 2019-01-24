@@ -9,7 +9,7 @@ public:
     void AddTrack(const char* filename,sf_count_t position);
     void Process();
     double* Getsample(sf_count_t i);
-    double* Getbuffer();
+    double* Getbuffer(sf_count_t i);
     sf_count_t GetTotalFrames();
     bool eof = false;
         track* tracks;

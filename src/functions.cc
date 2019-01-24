@@ -12,9 +12,11 @@
 #include <iostream>
 #include <string.h>
 #include "fftw3.h"
+#include <sndfile.hh>
 
 #define PI 3.14159265
 
+using namespace std;
 
 void fft(short* input, short* outputr,short*outputi , int size)
 {
@@ -321,3 +323,5 @@ void Limiter(double cut, double gain,double* input, const int size)
             input[i] = -cut;
     }
 }
+
+

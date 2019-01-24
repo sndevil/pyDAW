@@ -19,42 +19,39 @@
 ///// Sndfile reads data in range -32767 to 32767
 // buffer[2x] = right
 // buffer[2x+1] = left
+#define BufferSIZE 2048
 
 
 using std::cout;
 
+void Bounce_to_file(const char* path, mixer m, sf_count_t start, sf_count_t length);
+
 int main(int argc, const char * argv[]) {
-    const char * fname = "/Users/mohammadrezarezaei/1.wav" ;
-    const char * fread = "/Users/mohammadrezarezaei/Documents/Projects/DAW/guitar1.wav";
-    const char * fread1 = "/Users/mohammadrezarezaei/Documents/Projects/DAW/guitar2.wav";
-    const char * fread2 = "/Users/mohammadrezarezaei/Documents/Projects/DAW/Kick.wav";
-    const char * fread3 = "/Users/mohammadrezarezaei/Documents/Projects/DAW/Snare.wav";
-    const char * fread4 = "/Users/mohammadrezarezaei/Documents/Projects/DAW/Overhead.wav";
+    //cout<<"Started\n";
+    const char * fname = "/Users/mohammadreza/Developer/pyDAW/sounds/1.wav" ;
+    const char * fread = "/Users/mohammadreza/Developer/pyDAW/sounds/Esoteric.wav";
     mixer m;
-    
-    m.AddTrack(fread,150000);
-    m.AddTrack(fread1,150000);//100000);
-    m.AddTrack(fread2,0);
-    m.AddTrack(fread3,0);
-    m.AddTrack(fread4,0);
-    m.tracks[0].pan = -1;
-    m.tracks[1].pan = 1;
-    //cout<<"Constructing t\n";
-    //track t(fread);
-    
-    //cout<<"Constructing fout\n";
-    SndfileHandle fout = SndfileHandle(fname,SFM_WRITE,SF_FORMAT_WAV|SF_FORMAT_PCM_16,2,44100);
-    sf_count_t counter = 0;
-    sf_count_t total = m.GetTotalFrames()*2;
+    m.AddTrack(fread,0);
+    //cout<<"Mixer Created\n";
+    Bounce_to_file(fname,m, 0, m.GetTotalFrames());
+    return 1;
+}
+
+void Bounce_to_file(const char* path, mixer m, sf_count_t start, sf_count_t length)
+{
+    SndfileHandle fout = SndfileHandle(path,SFM_WRITE,SF_FORMAT_WAV|SF_FORMAT_PCM_16,2,44100);
+    sf_count_t counter = start;
+    sf_count_t total = length*2;
     //cout<<"Entering While "<< total <<"\n";
     
     while (!m.eof)
     {
         //cout<<"Writing Started\n";
-        fout.writef(m.Getsample(counter),1);
+        //fout.writef(
+        double* buffer = m.Getbuffer(counter);
+        fout.writef(buffer,BufferSIZE);
         //cout<<"Writing done\n";
-        counter+=2;
-        //cout<<"channels:"<<t.channels<<"\n";
+        counter+=BufferSIZE;
         if (counter >= total -1)
         {
             cout<<"Broke\n";
@@ -64,11 +61,8 @@ int main(int argc, const char * argv[]) {
         {
             double progress = (double)counter/total*100;
             cout<<progress<<"%\n";
-            //if (progress>10)
-            //    break;
         }
     }
-
+    
     puts ("Done.\n") ;
-    return 0;
 }

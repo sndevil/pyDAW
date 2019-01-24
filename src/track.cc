@@ -4,11 +4,10 @@
 #include <iostream>
 #include <math.h>
 #include "fftw3.h"
-#include "track.h"
 #include "functions.h"
 
 using std::cout;
-#define BufferSIZE 4096
+#define BufferSIZE 2048
 
 track::track(const char* filename)
 {
@@ -39,7 +38,7 @@ track::track()
 void track::init(const char* filename)
 {
     file = SndfileHandle(filename);
-    //cout<<"Opened File\n";
+    cout<<filename;
     this->channels = file.channels();
     this->FrameOffset = 0;
     this->Currentframe = 0;
@@ -47,7 +46,7 @@ void track::init(const char* filename)
     this->PositionInLine = 0;
     file.seek(0,SF_SEEK_SET);
     this->buffer = new double[BufferSIZE];
-    //cout<<"Reading buffer\n";
+    //cout<<"Reading buffer\n";    
     Readbuffer();
 }
 
@@ -68,15 +67,14 @@ void track::Process()
     //double Gr,Gl;
     //cout<<"Buffer after process: ";
 
-    double buffer2[BufferSIZE];
-    double samplerate = file.samplerate();
+    //double samplerate = file.samplerate();
     double *in1, *in2,*outr1,*outr2;
     in1 = (double*)fftw_malloc(sizeof(double)*BufferSIZE/2);
     outr1 = (double*)fftw_malloc(sizeof(double)*BufferSIZE/2);
         outr2 = (double*)fftw_malloc(sizeof(double)*BufferSIZE/2);
         in2 = (double*)fftw_malloc(sizeof(double)*BufferSIZE/2);
     
-    double deltaf = samplerate / (BufferSIZE/channels);
+    //double deltaf = samplerate / (BufferSIZE/channels);
     for (int i = 0; i < BufferSIZE;i++)
     {
         //double t = (double)i / samplerate;
@@ -109,7 +107,7 @@ void track::Process()
     pi1 = fftw_plan_dft_c2r_1d(BufferSIZE/channels, out1, outr1,FFTW_ESTIMATE);
     fftw_execute(p1);
     
-    double eqbands[6] = {200,100,-1,2000,1000,1};
+    //double eqbands[6] = {200,100,-1,2000,1000,1};
     //equaliser(eqbands,2,samplerate,out1,BufferSIZE/4+1);
     //equaliser(eqbands,2,samplerate,out2,BufferSIZE/4+1);
     //Highpass(1000, 1,500,samplerate,out1,BufferSIZE/channels/2+1);
@@ -259,16 +257,17 @@ sf_count_t track::GetTotalFrames()
 
 void track::Readbuffer()
 {
-    //cout<<"Entered Reading buffer\n";
-    sf_count_t read = file.readf(buffer,BufferSIZE/channels);
-    //cout<<"Processing\n";
-    if (channels > 1)
-        Process();
-    else
-        Process_Mono();
-    //cout<<"Process done\n";
-    //cout<<"increasing frameoffset\n";
-    //cout<<"read:"<< read<<" Frameoffset: " <<FrameOffset<<" Processing\n";
-    FrameOffset += read;
+    if (channels != 0)
+    {
+        sf_count_t read = file.readf(buffer,BufferSIZE/channels);
+        if (channels > 1)
+            {}//Process();
+        else
+            Process_Mono();
+        //cout<<"Process done\n";
+        //cout<<"increasing frameoffset\n";
+        //cout<<"read:"<< read<<" Frameoffset: " <<FrameOffset<<" Processing\n";
+        FrameOffset += read;
+    }
     //cout<<"Frameoffset: " <<FrameOffset<<"\n";
 }

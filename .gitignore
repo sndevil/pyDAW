@@ -1,1 +1,4 @@
 bin
+obj
+sounds
+.DS_Store

@@ -18,8 +18,8 @@
 MAKE = make
 
 INCDIR    = include
-LIBDIR    = /usr/local/lib
-FFTWDIR   = /usr/local/Cellar/fftw/3.3.4_1/lib
+LIBDIR    = /usr/local/Cellar/libsndfile/1.0.28/lib
+FFTWDIR   = /usr/local/Cellar/fftw/3.3.7_1/lib
 
 OUT=bin/out
 OBJ=obj/main.o obj/mixer.o obj/track.o obj/functions.o
@@ -28,10 +28,10 @@ PREFLAGS    := -Wall -g -O6 -I$(INCDIR)
 # Uncomment the following line for static linking (more portable executable)
 # PREFLAGS += -static
 
-POSTFLAGS := -L$(LIBDIR) -lsndfile -lm -L$(FFTWDIR) -lfftw3
+POSTFLAGS := -L $(LIBDIR) -lsndfile -lm -L $(FFTWDIR) -lfftw3
 
 GCC=g++
-FLG=-std=c++14
+FLG=-std=c++17
 
 # commands which do not refer to actual files:
 .PHONY: all clean lib library examples example

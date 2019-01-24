@@ -16,12 +16,12 @@
 
 using std::cout;
 
-#define BufferSIZE 4096
+#define BufferSIZE 2048
 #define Maxfiles 10
 
 mixer::mixer()
 {
-    buffer = new double[BufferSIZE];
+    buffer = new double[BufferSIZE]; 
     tracks = new track[Maxfiles];
 }
 
@@ -90,12 +90,13 @@ void mixer::Process()
     
 }
 
-double* mixer::Getsample(sf_count_t i)
+double* mixer::Getsample(sf_count_t i=0)
 {
     double* out;
     if (i > Totalframes*2)
     {
         cout<<"Eof triggered "<< i <<"\n";
+        out = nullptr;
         eof = true;
     }
     else
@@ -121,9 +122,34 @@ double* mixer::Getsample(sf_count_t i)
     }
     return out;
 }
-double* mixer::Getbuffer()
+double* mixer::Getbuffer(sf_count_t i=0)
 {
-    return buffer;
+    double* out;
+    if (i > Totalframes*2)
+    {
+        cout<<"Eof triggered "<< i <<"\n";
+        out = nullptr;
+        eof = true;
+    }
+    else
+    {
+        //cout<<"entered for i:" << i <<"\n";
+        int offset = (int)i;// / BufferSIZE);
+        
+        //cout<<"Frameoffset: " << FrameOffset << " offset: " <<offset <<"\n";
+        if ( FrameOffset - offset == 0)
+        {
+            //cout<<"Buffer Read for i:" << i <<"\n";
+            //FrameOffset = offset;
+            //Currentframe = file.seek((int)i/2,SF_SEEK_SET);
+            Readbuffer();
+            //cout<<"Frameoffset: " <<FrameOffset<<"\n";
+        }
+        if (eof)
+            eof = false;
+        out = buffer;
+    }
+    return out;
 }
 sf_count_t mixer::GetTotalFrames()
 {

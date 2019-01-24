@@ -8,7 +8,10 @@
 
 #include <stdio.h>
 #include <fftw3.h>
+#include "mixer.h"
 
+
+void Bounce_to_file(const char* path, mixer m, sf_count_t start, sf_count_t length);
 void fft(short* input, short* outputr,short*outputi , int size);
 void fft_stereo(double* input, double* outputr,double*outputi , int size);
 void fft2(double* input,double*inputi , const int size);
