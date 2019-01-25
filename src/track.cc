@@ -75,6 +75,7 @@ void track::Process()
         in2 = (double*)fftw_malloc(sizeof(double)*BufferSIZE/2);
     
     //double deltaf = samplerate / (BufferSIZE/channels);
+    //cout<<"Volume: "<<volume<<"\nPan: "<<pan;
     for (int i = 0; i < BufferSIZE;i++)
     {
         //double t = (double)i / samplerate;
@@ -261,7 +262,7 @@ void track::Readbuffer()
     {
         sf_count_t read = file.readf(buffer,BufferSIZE/channels);
         if (channels > 1)
-        {}//Process();
+            Process();
         else
             Process_Mono();
         //cout<<"Process done\n";

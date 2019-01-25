@@ -31,14 +31,12 @@ mixer::mixer()
     trackcount = 0;
 }
 
-void mixer::AddTrack(const char* filename,sf_count_t position)
+void mixer::AddTrack(const char* filename,sf_count_t position, double volume, double pan)
 {
-    cout<<"addtrack\n";
-    cout<<filename<<"\n";
     tracks[trackcount].init(filename);
-    cout<<"inited\n";
     tracks[trackcount].PositionInLine=position;
-        cout<<"buffer and tracks\n";
+    tracks[trackcount].SetVolume(volume);
+    tracks[trackcount].SetPan(pan);
     sf_count_t end = position+tracks[trackcount].GetTotalFrames();
     if (Totalframes < end)
         Totalframes = end;

@@ -29,12 +29,10 @@ using std::cout;
 void Bounce_to_file(const char* path, mixer m, sf_count_t start, sf_count_t length);
 
 int main(int argc, const char * argv[]) {
-    cout<<"Started\n";
     const char * fname = "/Users/mohammadreza/Developer/pyDAW/sounds/1.wav" ;
     const char * fread = "/Users/mohammadreza/Developer/pyDAW/sounds/ES.wav";
     mixer m;
-    cout<<"here\n";
-    m.AddTrack(fread,0);
+    m.AddTrack(fread,0,1,0);
     cout<<"Mixer Created\n";
     Bounce_to_file(fname,m, 0, m.GetTotalFrames());
     return 1;

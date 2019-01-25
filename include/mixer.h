@@ -6,7 +6,7 @@ class mixer
 {
 public:
     mixer();
-    void AddTrack(const char* filename,sf_count_t position);
+    void AddTrack(const char* filename,sf_count_t position, double volume, double pan);
     void Process();
     double* Getsample(sf_count_t i);
     double* Getbuffer(sf_count_t i);
