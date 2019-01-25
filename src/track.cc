@@ -137,7 +137,7 @@ void track::Process()
         fftw_destroy_plan(pi2);
     
     
-    Limiter(1, 0.7,buffer, BufferSIZE);
+    //Limiter(1, 0.7,buffer, BufferSIZE);
     //fft_stereo(buffer, fftr,ffti, BufferSIZE);
     //for (int i = 0; i < BufferSIZE;i++)
     //{
@@ -261,7 +261,7 @@ void track::Readbuffer()
     {
         sf_count_t read = file.readf(buffer,BufferSIZE/channels);
         if (channels > 1)
-            {}//Process();
+        {}//Process();
         else
             Process_Mono();
         //cout<<"Process done\n";

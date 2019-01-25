@@ -1,7 +1,8 @@
 #include <sndfile.hh>
 #include <cstdio>
+#include "effect.h"
 
-#define Maxfiles 10
+#define Maxfiles 50
 
 class track
 {
@@ -13,20 +14,27 @@ public:
     void SetVolume(double a);
     void Process();
     void Process_Mono();
+    void AddFreqEffect(effect* e, EffectType t);
+    void AddTimeEffect(effect* e, EffectType t);
+    
     double* Getsample(sf_count_t i);
     double* Getbuffer();
     sf_count_t GetTotalFrames();
-    bool eof = false;
-    bool mute = false;
-    bool solo = false;
-    int channels=0;
-    double pan = 0,volume = 1;
-    sf_count_t PositionInLine=0;
+    bool eof;
+    bool mute;
+    bool solo;
+    int channels;
+    double pan,volume;
+    int SampleRate;
+    sf_count_t PositionInLine;
 private:
     void Readbuffer();
-    sf_count_t Totalframes=0,Currentframe=0,FrameOffset=0;
+    sf_count_t Totalframes,Currentframe,FrameOffset;
     SndfileHandle file;
     double* buffer;
-    
+    effect** timeeffects;
+    effect** freqeffects;
+    int freqeffectscount;
+    int timeeffectscount;
     
 };

@@ -23,12 +23,22 @@ mixer::mixer()
 {
     buffer = new double[BufferSIZE]; 
     tracks = new track[Maxfiles];
+
+    Totalframes = Currentframe = FrameOffset = FrameOffsetMono=0;
+    eof = false;
+    pan = 0;
+    volume = 1;
+    trackcount = 0;
 }
 
 void mixer::AddTrack(const char* filename,sf_count_t position)
 {
+    cout<<"addtrack\n";
+    cout<<filename<<"\n";
     tracks[trackcount].init(filename);
+    cout<<"inited\n";
     tracks[trackcount].PositionInLine=position;
+        cout<<"buffer and tracks\n";
     sf_count_t end = position+tracks[trackcount].GetTotalFrames();
     if (Totalframes < end)
         Totalframes = end;
@@ -41,16 +51,13 @@ void mixer::Readbuffer()
     for (int i = 0;i < BufferSIZE;i+=2)
     {
         int pos = FrameOffset + i;
-        //int posmono = FrameOffsetMono+ i/2;
-        //cout<<"position:"<<pos<<"\n";
         buffer[i] = 0;
         buffer[i+1] = 0;
         for (int j = 0; j < trackcount;j++)
         {
             int mul = (tracks[j].channels ==1)?2:1;
-            if (pos > tracks[j].GetTotalFrames()*mul + tracks[j].PositionInLine || pos < tracks[j].PositionInLine)
+            if (pos > tracks[j].GetTotalFrames()*tracks[j].channels + tracks[j].PositionInLine || pos < tracks[j].PositionInLine)
             {
-                //cout<<"Ended\n";
                 buffer[i] += 0;
                 buffer[i+1] += 0;
             }
@@ -68,21 +75,13 @@ void mixer::Readbuffer()
                 else
                 {
                     double* input = tracks[j].Getsample(pos-tracks[j].PositionInLine);
-                    
-                    //cout<<i<<" : " << input[0]<<"\n";
                     buffer[i] += input[0];
                     buffer[i+1] += input[1];
                 }
             }
         }
-        //double* input = tracks[0].Getsample(pos);//-tracks[0].PositionInLine);
-        //buffer[i] +=input[0];
-        //buffer[i+1] +=input[1];
     }
     
-    //for (int i = 0; i)
-    FrameOffset+= BufferSIZE;
-    //FrameOffsetMono+= BufferSIZE/2;
     
 }
 void mixer::Process()
@@ -100,20 +99,12 @@ double* mixer::Getsample(sf_count_t i=0)
         eof = true;
     }
     else
-    {
-        //cout<<"entered for i:" << i <<"\n";
-        int offset = (int)i;// / BufferSIZE);
+    {        
+        int offset = (int)i;
         
         int index = i % BufferSIZE;
-        //cout<<"Frameoffset: " << FrameOffset << " offset: " <<offset <<"\n";
         if ( FrameOffset - offset == 0)
-        {
-            //cout<<"Buffer Read for i:" << i <<"\n";
-            //FrameOffset = offset;
-            //Currentframe = file.seek((int)i/2,SF_SEEK_SET);
             Readbuffer();
-            //cout<<"Frameoffset: " <<FrameOffset<<"\n";
-        }
         if (eof)
             eof = false;
         out = new double[2];
@@ -133,18 +124,8 @@ double* mixer::Getbuffer(sf_count_t i=0)
     }
     else
     {
-        //cout<<"entered for i:" << i <<"\n";
-        int offset = (int)i;// / BufferSIZE);
-        
-        //cout<<"Frameoffset: " << FrameOffset << " offset: " <<offset <<"\n";
-        if ( FrameOffset - offset == 0)
-        {
-            //cout<<"Buffer Read for i:" << i <<"\n";
-            //FrameOffset = offset;
-            //Currentframe = file.seek((int)i/2,SF_SEEK_SET);
-            Readbuffer();
-            //cout<<"Frameoffset: " <<FrameOffset<<"\n";
-        }
+        FrameOffset = i;
+        Readbuffer();
         if (eof)
             eof = false;
         out = buffer;

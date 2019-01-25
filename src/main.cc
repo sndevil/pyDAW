@@ -13,6 +13,8 @@
 #include <cstring>
 #include <math.h>
 #include "mixer.h"
+#include <ctime>
+#include <chrono>
 
 
 
@@ -27,42 +29,47 @@ using std::cout;
 void Bounce_to_file(const char* path, mixer m, sf_count_t start, sf_count_t length);
 
 int main(int argc, const char * argv[]) {
-    //cout<<"Started\n";
+    cout<<"Started\n";
     const char * fname = "/Users/mohammadreza/Developer/pyDAW/sounds/1.wav" ;
-    const char * fread = "/Users/mohammadreza/Developer/pyDAW/sounds/Esoteric.wav";
+    const char * fread = "/Users/mohammadreza/Developer/pyDAW/sounds/ES.wav";
     mixer m;
+    cout<<"here\n";
     m.AddTrack(fread,0);
-    //cout<<"Mixer Created\n";
+    cout<<"Mixer Created\n";
     Bounce_to_file(fname,m, 0, m.GetTotalFrames());
     return 1;
 }
 
 void Bounce_to_file(const char* path, mixer m, sf_count_t start, sf_count_t length)
 {
-    SndfileHandle fout = SndfileHandle(path,SFM_WRITE,SF_FORMAT_WAV|SF_FORMAT_PCM_16,2,44100);
-    sf_count_t counter = start;
-    sf_count_t total = length*2;
-    //cout<<"Entering While "<< total <<"\n";
+    using namespace std::chrono;
     
+    high_resolution_clock::time_point t1 = high_resolution_clock::now();
+    int channels = 2;
+    SndfileHandle fout = SndfileHandle(path,SFM_WRITE,SF_FORMAT_WAV|SF_FORMAT_PCM_16,channels,44100);
+    sf_count_t counter = start;
+    sf_count_t total = length*channels;
     while (!m.eof)
     {
-        //cout<<"Writing Started\n";
-        //fout.writef(
         double* buffer = m.Getbuffer(counter);
-        fout.writef(buffer,BufferSIZE);
-        //cout<<"Writing done\n";
+        fout.writef(buffer,BufferSIZE/channels);
         counter+=BufferSIZE;
         if (counter >= total -1)
         {
             cout<<"Broke\n";
             break;
         }
-        if (counter %100000==0)
+        if (counter %50000==0)
         {
             double progress = (double)counter/total*100;
             cout<<progress<<"%\n";
         }
     }
+    high_resolution_clock::time_point t2 = high_resolution_clock::now();
     
-    puts ("Done.\n") ;
+    duration<double> time_span = duration_cast<duration<double>>(t2 - t1);
+    
+    cout << "It took me " << time_span.count() << " seconds.";
+    cout << std::endl;
+    
 }
